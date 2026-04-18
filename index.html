@@ -2643,19 +2643,32 @@ async function sbFetch(table, method='GET', body=null, query='') {
   return res.json().catch(() => null);
 }
 
+async function sbLoad() {
+  try {
+    const [m, p, a] = await Promise.all([
+      sbFetch('members','GET',null,'?order=created_at.asc'),
+      sbFetch('pending_members','GET',null,'?order=created_at.asc'),
+      sbFetch('announcements','GET',null,'?order=created_at.desc'),
+    ]);
+    if (m) members = m;
+    if (p) pendingMembers = p;
+    if (a) announcements = a;
+  } catch(e) { console.error('sbLoad error:', e); }
+}
+
 // ====== STATE ======
 let ADMIN_PASS = localStorage.getItem('tz_admin_pass') || 'zestora2025';
 let adminLoggedIn = sessionStorage.getItem('tz_admin_session') === '1';
 let members = [];
 let pendingMembers = [];
 let announcements = [];
-let leaveRequests = [];
-let gangRules = [];
-let checkinSessions = [];
-let activeSession = null;
-let polls = [];
-let gallery = [];
-let calEvents = [];
+let leaveRequests = JSON.parse(localStorage.getItem('tz_leave') || '[]');
+let gangRules = JSON.parse(localStorage.getItem('tz_rules') || '[]');
+let checkinSessions = JSON.parse(localStorage.getItem('tz_checkin_sessions') || '[]');
+let activeSession = JSON.parse(localStorage.getItem('tz_active_session') || 'null');
+let polls = JSON.parse(localStorage.getItem('tz_polls') || '[]');
+let gallery = JSON.parse(localStorage.getItem('tz_gallery') || '[]');
+let calEvents = JSON.parse(localStorage.getItem('tz_cal_events') || '[]');
 let dmMessages = JSON.parse(localStorage.getItem('tz_dm') || '[]');
 const DEFAULT_WEBHOOK_BIRTHDAY = 'https://discord.com/api/webhooks/1495073922063012060/Xi1SpZkWLzMnVUysy-1rTi9jly76yhAw79E6eng2Xo-JIZxlVB0wtvWZ7chOS9_h4r0b';
 const DEFAULT_WEBHOOK_LEAVE    = 'https://discord.com/api/webhooks/1495071381845708961/XP1oDJkzo18MOA37KuXIXTgSLh6TxqIFyrf0yuyRJiWK-MI0FUn9Lzxwd-TPHUEtQDDI';
@@ -2667,38 +2680,15 @@ let lastSeenAnn = parseInt(localStorage.getItem('tz_last_seen_ann') || '0');
 let checkinCountdownTimer = null;
 let calYear, calMonth;
 
-async function sbLoad() {
-  try {
-    const [m, p, a, r, po, g, cs, ca, lr] = await Promise.all([
-      sbFetch('members','GET',null,'?order=created_at.asc'),
-      sbFetch('pending_members','GET',null,'?order=created_at.asc'),
-      sbFetch('announcements','GET',null,'?order=created_at.desc'),
-      sbFetch('rules','GET',null,'?order=created_at.asc'),
-      sbFetch('polls','GET',null,'?order=created_at.desc'),
-      sbFetch('gallery','GET',null,'?order=created_at.desc'),
-      sbFetch('checkin_sessions','GET',null,'?order=created_at.desc'),
-      sbFetch('cal_events','GET',null,'?order=created_at.asc'),
-      sbFetch('leave_requests','GET',null,'?order=created_at.desc'),
-    ]);
-    if (m) members = m;
-    if (p) pendingMembers = p;
-    if (a) announcements = a;
-    if (r) gangRules = r;
-    if (po) polls = po;
-    if (g) gallery = g;
-    if (cs) {
-      checkinSessions = cs.filter(s => !s.active);
-      const active = cs.find(s => s.active);
-      activeSession = active || null;
-    }
-    if (ca) calEvents = ca;
-    if (lr) leaveRequests = lr;
-  } catch(e) { console.error('sbLoad error:', e); }
-}
-
-
 function save() {
-  // Only keep truly local/personal data in localStorage
+  // Local-only data (not shared)
+  localStorage.setItem('tz_leave', JSON.stringify(leaveRequests));
+  localStorage.setItem('tz_rules', JSON.stringify(gangRules));
+  localStorage.setItem('tz_checkin_sessions', JSON.stringify(checkinSessions));
+  localStorage.setItem('tz_active_session', JSON.stringify(activeSession));
+  localStorage.setItem('tz_polls', JSON.stringify(polls));
+  localStorage.setItem('tz_gallery', JSON.stringify(gallery));
+  localStorage.setItem('tz_cal_events', JSON.stringify(calEvents));
   localStorage.setItem('tz_dm', JSON.stringify(dmMessages));
 }
 
@@ -2876,10 +2866,14 @@ async function submitLeave() {
   // ลบ pending ด้วย
   pendingMembers = pendingMembers.filter(m => m.ig.toLowerCase() !== igFull.toLowerCase());
 
-  const req = { ig: igFull, nick, gen, reason, date: new Date().toLocaleDateString('th-TH') };
-  const resLeave = await sbFetch('leave_requests', 'POST', req);
-  if (resLeave && resLeave[0]) leaveRequests.unshift(resLeave[0]);
-  else leaveRequests.unshift({ ...req, id: Date.now() });
+  const req = {
+    id: Date.now(),
+    ig: igFull,
+    nick, gen, reason,
+    date: new Date().toLocaleDateString('th-TH')
+  };
+  leaveRequests.push(req);
+  save();
 
   const wh = localStorage.getItem('tz_webhook_leave') || DEFAULT_WEBHOOK_LEAVE;
   if (wh) {
@@ -3624,12 +3618,12 @@ async function rejectMember(id) {
 }
 
 // ====== RULES ======
-async function saveRule() {
+function saveRule() {
   const title = document.getElementById('rule-title-input').value.trim();
   const body = document.getElementById('rule-body-input').value.trim();
   if (!title || !body) { showToast('กรุณากรอกหัวข้อและรายละเอียดกฎ', 'warn'); return; }
-  const res = await sbFetch('rules', 'POST', { title, body });
-  if (res && res[0]) gangRules.push(res[0]);
+  gangRules.push({ id: Date.now(), title, body });
+  save();
   document.getElementById('rule-title-input').value = '';
   document.getElementById('rule-body-input').value = '';
   showToast('เพิ่มกฎเรียบร้อย ✓', 'success');
@@ -3637,10 +3631,9 @@ async function saveRule() {
   renderRules();
 }
 
-async function deleteRule(id) {
-  await sbFetch('rules', 'DELETE', null, `?id=eq.${id}`);
+function deleteRule(id) {
   gangRules = gangRules.filter(r => r.id !== id);
-  renderAdminPanel(); renderRules();
+  save(); renderAdminPanel(); renderRules();
 }
 
 function renderRules() {
@@ -3666,51 +3659,43 @@ function generateCode() {
   return String(Math.floor(1000 + Math.random() * 9000));
 }
 
-async function startCheckinSession() {
+function startCheckinSession() {
   const name = document.getElementById('ci-session-name').value.trim() || 'เช็คชื่อ';
   const mins = parseInt(document.getElementById('ci-duration').value) || 30;
   const code = generateCode();
-  const now = new Date();
-  const endsAt = new Date(Date.now() + mins * 60000);
-  const res = await sbFetch('checkin_sessions', 'POST', {
-    label: name, code, duration: mins,
-    starts_at: now.toISOString(), ends_at: endsAt.toISOString(),
-    checked: [], active: true
-  });
-  if (res && res[0]) {
-    activeSession = res[0];
-    activeSession.checkedIn = activeSession.checked || [];
-    activeSession.endsAt = new Date(activeSession.ends_at).getTime();
-    activeSession.name = activeSession.label;
-  }
+  activeSession = {
+    id: Date.now(),
+    name,
+    code,
+    endsAt: Date.now() + mins * 60000,
+    checkedIn: []
+  };
+  save();
   showToast(`เปิดเซสชัน "${name}" รหัส: ${code} ✓`);
   if (notifSettings.ci) pushNotif('เปิดเช็คชื่อแล้ว!', `เซสชัน "${name}" รหัส: ${code} — เปิดอีก ${mins} นาที`, '✅');
   renderAdminPanel();
   startSessionTimer();
 }
 
-async function stopCheckinSession() {
+function stopCheckinSession() {
   if (!activeSession) return;
-  await sbFetch('checkin_sessions', 'PATCH', { active: false }, `?id=eq.${activeSession.id}`);
-  activeSession.active = false;
-  checkinSessions.unshift({ ...activeSession });
+  checkinSessions.push({ ...activeSession });
   activeSession = null;
+  save();
   clearInterval(checkinCountdownTimer);
   showToast('ปิดเซสชันเช็คชื่อแล้ว', 'info');
   renderAdminPanel();
 }
 
-async function deleteCheckinSession(id) {
-  await sbFetch('checkin_sessions', 'DELETE', null, `?id=eq.${id}`);
+function deleteCheckinSession(id) {
   checkinSessions = checkinSessions.filter(s => s.id !== id);
-  renderAdminPanel();
+  save(); renderAdminPanel();
 }
 
 function startSessionTimer() {
   clearInterval(checkinCountdownTimer);
   checkinCountdownTimer = setInterval(() => {
     if (!activeSession) { clearInterval(checkinCountdownTimer); return; }
-    if (!activeSession.endsAt) activeSession.endsAt = new Date(activeSession.ends_at).getTime();
     const remain = activeSession.endsAt - Date.now();
     if (remain <= 0) {
       stopCheckinSession();
@@ -3729,11 +3714,10 @@ function startSessionTimer() {
 function renderCheckedList() {
   const el = document.getElementById('ci-checked-list');
   if (!el || !activeSession) return;
-  const list = activeSession.checkedIn || activeSession.checked || [];
-  if (list.length === 0) {
+  if (activeSession.checkedIn.length === 0) {
     el.innerHTML = '<p style="color:var(--gray);font-size:13px;padding:8px;">ยังไม่มีใครเช็คชื่อ</p>';
   } else {
-    el.innerHTML = list.map((c,i) => `
+    el.innerHTML = activeSession.checkedIn.map((c,i) => `
       <div class="checkin-history-item">
         <span>${i+1}. <strong>${c.nick}</strong> (${c.ig})</span>
         <span style="color:var(--gray);font-size:12px;">${c.time}</span>
@@ -3752,23 +3736,13 @@ function renderCheckinPage() {
   const todayList = document.getElementById('checkin-today-list');
 
   // Check if active session expired
-  // normalize Supabase fields
-  if (activeSession) {
-    if (!activeSession.endsAt) activeSession.endsAt = new Date(activeSession.ends_at).getTime();
-    if (!activeSession.name) activeSession.name = activeSession.label;
-    if (!activeSession.checkedIn) activeSession.checkedIn = activeSession.checked || [];
-  }
   if (activeSession && Date.now() > activeSession.endsAt) {
-    await sbFetch('checkin_sessions', 'PATCH', { active: false }, `?id=eq.${activeSession.id}`);
-    activeSession.active = false;
-    checkinSessions.unshift({ ...activeSession });
+    checkinSessions.push({ ...activeSession });
     activeSession = null;
+    save();
   }
 
   if (activeSession) {
-    if (!activeSession.endsAt) activeSession.endsAt = new Date(activeSession.ends_at).getTime();
-    if (!activeSession.name) activeSession.name = activeSession.label;
-    if (!activeSession.checkedIn) activeSession.checkedIn = activeSession.checked || [];
     activeSec.style.display = 'block';
     inactiveSec.style.display = 'none';
     document.getElementById('checkin-session-label').textContent = activeSession.name;
@@ -3792,14 +3766,12 @@ function renderCheckinPage() {
     `).join('');
   } else if (!activeSession && checkinSessions.length > 0) {
     // Show last session
-    const last = checkinSessions[0] || checkinSessions[checkinSessions.length - 1];
-    const lastChecked = last.checkedIn || last.checked || [];
-    const lastLabel = last.name || last.label || 'เซสชันล่าสุด';
+    const last = checkinSessions[checkinSessions.length - 1];
     todayWrap.style.display = 'block';
-    document.querySelector('#checkin-today-wrap .section-title').textContent = `เซสชันล่าสุด: ${lastLabel}`;
-    todayList.innerHTML = lastChecked.length === 0
+    document.querySelector('#checkin-today-wrap .section-title').textContent = `เซสชันล่าสุด: ${last.name}`;
+    todayList.innerHTML = last.checkedIn.length === 0
       ? '<p style="color:var(--gray);font-size:13px;padding:8px;">ไม่มีใครเช็คชื่อ</p>'
-      : lastChecked.map((c,i) => `
+      : last.checkedIn.map((c,i) => `
         <div class="checkin-history-item">
           <span>${i+1}. <strong style="color:var(--white);">${c.nick}</strong></span>
           <span class="checkin-badge present">✓</span>
@@ -3826,7 +3798,7 @@ function updateCheckinPublicTimer() {
   if (codeEl) codeEl.textContent = activeSession.code;
 }
 
-async function submitCheckin() {
+function submitCheckin() {
   const igInput = document.getElementById('ci-ig').value.trim();
   const codeInput = document.getElementById('ci-code').value.trim();
   const resultEl = document.getElementById('checkin-result');
@@ -3862,13 +3834,11 @@ async function submitCheckin() {
   }
 
   const now = new Date();
-  if (!activeSession.checkedIn) activeSession.checkedIn = [];
   activeSession.checkedIn.push({
     ig: igFull, nick: member.nick,
     time: now.toLocaleTimeString('th-TH')
   });
-  // sync checked list to Supabase
-  await sbFetch('checkin_sessions', 'PATCH', { checked: activeSession.checkedIn }, `?id=eq.${activeSession.id}`);
+  save();
 
   resultEl.style.display = 'block';
   resultEl.className = 'checkin-result success';
@@ -3966,46 +3936,44 @@ function addPollOption() {
   wrap.appendChild(div);
 }
 
-async function createPoll() {
+function createPoll() {
   const question = document.getElementById('poll-question-input').value.trim();
   const opts = [...document.querySelectorAll('.poll-opt')].map(i => i.value.trim()).filter(v => v);
   const hours = parseInt(document.getElementById('poll-duration').value) || 24;
   if (!question || opts.length < 2) { showToast('กรุณากรอกคำถามและอย่างน้อย 2 ตัวเลือก'); return; }
-  const endsAt = new Date(Date.now() + hours * 3600000).toISOString();
-  const options = opts.map(o => ({ label: o, votes: [] }));
-  const res = await sbFetch('polls', 'POST', { question, options, ends_at: endsAt, closed: false });
-  if (res && res[0]) polls.unshift(res[0]);
+  polls.push({
+    id: Date.now(), question, options: opts.map(o => ({ label: o, votes: [], voters: [] })),
+    endsAt: Date.now() + hours * 3600000,
+    date: new Date().toLocaleDateString('th-TH'), closed: false
+  });
+  save();
   document.getElementById('poll-question-input').value = '';
   document.querySelectorAll('.poll-opt').forEach((el, i) => { if (i >= 2) el.parentNode.remove(); else el.value = ''; });
   showToast('สร้างโพลเรียบร้อย ✓', 'success');
   renderAdminPanel();
-  renderPolls();
 }
 
-async function votePoll(pollId, optIdx) {
+function votePoll(pollId, optIdx) {
   const poll = polls.find(p => p.id === pollId);
-  if (!poll || poll.closed) return;
-  if (poll.ends_at && Date.now() > new Date(poll.ends_at).getTime()) return;
+  if (!poll || poll.closed || Date.now() > poll.endsAt) return;
+  // ป้องกันโหวตซ้ำ (ใช้ localStorage fingerprint)
   const voteKey = `tz_voted_${pollId}`;
   if (localStorage.getItem(voteKey)) { showToast('คุณโหวตไปแล้ว', 'warn'); return; }
-  if (!poll.options[optIdx].votes) poll.options[optIdx].votes = [];
   poll.options[optIdx].votes.push(Date.now());
   localStorage.setItem(voteKey, String(optIdx));
-  await sbFetch('polls', 'PATCH', { options: poll.options }, `?id=eq.${pollId}`);
+  save();
   renderPolls();
   showToast('โหวตเรียบร้อย ✓', 'success');
 }
 
-async function closePoll(id) {
-  await sbFetch('polls', 'PATCH', { closed: true }, `?id=eq.${id}`);
+function closePoll(id) {
   const poll = polls.find(p => p.id === id);
-  if (poll) { poll.closed = true; renderAdminPanel(); renderPolls(); }
+  if (poll) { poll.closed = true; save(); renderAdminPanel(); renderPolls(); }
 }
 
-async function deletePoll(id) {
-  await sbFetch('polls', 'DELETE', null, `?id=eq.${id}`);
+function deletePoll(id) {
   polls = polls.filter(p => p.id !== id);
-  renderAdminPanel(); renderPolls();
+  save(); renderAdminPanel(); renderPolls();
 }
 
 function renderPolls() {
@@ -4014,10 +3982,7 @@ function renderPolls() {
   if (!list) return;
 
   // Auto-close expired polls
-  polls.forEach(p => {
-    const et = p.ends_at ? new Date(p.ends_at).getTime() : Infinity;
-    if (!p.closed && Date.now() > et) p.closed = true;
-  });
+  polls.forEach(p => { if (!p.closed && Date.now() > p.endsAt) p.closed = true; });
 
   const activePoll = polls.filter(p => !p.closed);
   const closedPoll = polls.filter(p => p.closed);
@@ -4027,19 +3992,17 @@ function renderPolls() {
   empty.style.display = 'none';
 
   list.innerHTML = allSorted.map(poll => {
-    const total = poll.options.reduce((s, o) => s + (o.votes ? o.votes.length : 0), 0);
+    const total = poll.options.reduce((s, o) => s + o.votes.length, 0);
     const myVote = localStorage.getItem(`tz_voted_${poll.id}`);
     const hasVoted = myVote !== null || poll.closed;
-    const pollEndsAt = poll.ends_at ? new Date(poll.ends_at).getTime() : Infinity;
-    const isClosed = poll.closed || Date.now() > pollEndsAt;
-    const pollDate = poll.created_at ? new Date(poll.created_at).toLocaleDateString('th-TH') : (poll.date || '');
+    const isClosed = poll.closed || Date.now() > poll.endsAt;
     const maxVotes = Math.max(...poll.options.map(o => o.votes.length), 1);
 
     return `<div class="poll-card reveal">
       <div class="poll-question">${poll.question}
         ${isClosed ? `<span class="poll-closed-tag">ปิดแล้ว</span>` : `<span class="poll-active-tag">🟢 เปิดอยู่</span>`}
       </div>
-      <div class="poll-meta">${pollDate} · ${total} โหวต</div>
+      <div class="poll-meta">${poll.date} · ${total} โหวต</div>
       <div class="poll-options">
         ${poll.options.map((opt, i) => {
           const pct = total ? Math.round(opt.votes.length / total * 100) : 0;
@@ -4082,25 +4045,24 @@ function previewGalleryUpload(input) {
   });
 }
 
-async function uploadGallery() {
+function uploadGallery() {
   const caption = document.getElementById('gallery-caption-input').value.trim();
   if (galleryUploadFiles.length === 0) { showToast('กรุณาเลือกรูปภาพก่อน', 'warn'); return; }
-  for (const data of galleryUploadFiles) {
-    const res = await sbFetch('gallery', 'POST', { url: data, caption });
-    if (res && res[0]) gallery.unshift(res[0]);
-  }
+  galleryUploadFiles.forEach(data => {
+    gallery.push({ id: Date.now() + Math.random(), src: data, caption, date: new Date().toLocaleDateString('th-TH') });
+  });
+  save();
   galleryUploadFiles = [];
   document.getElementById('gallery-caption-input').value = '';
   document.getElementById('gallery-upload-preview').innerHTML = '';
   document.getElementById('gallery-upload-input').value = '';
-  showToast(`อัปโหลดรูปเรียบร้อย ✓`);
+  showToast(`อัปโหลด ${gallery.length} รูปเรียบร้อย ✓`);
   renderAdminPanel(); renderGallery();
 }
 
-async function deleteGalleryItem(id) {
-  await sbFetch('gallery', 'DELETE', null, `?id=eq.${id}`);
+function deleteGalleryItem(id) {
   gallery = gallery.filter(g => g.id !== id);
-  renderAdminPanel(); renderGallery();
+  save(); renderAdminPanel(); renderGallery();
 }
 
 function renderGallery() {
@@ -4109,15 +4071,12 @@ function renderGallery() {
   if (!grid) return;
   if (gallery.length === 0) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
-  grid.innerHTML = gallery.map(g => {
-    const src = g.url || g.src || '';
-    const cap = g.caption || '';
-    const dateStr = g.created_at ? new Date(g.created_at).toLocaleDateString('th-TH') : '';
-    return `<div class="gallery-item" onclick="openLightbox('${src}','${cap}')">
-      <img src="${src}" alt="${cap}">
-      <div class="gallery-item-label">${cap || dateStr}</div>
-    </div>`;
-  }).join('');
+  grid.innerHTML = gallery.map(g => `
+    <div class="gallery-item" onclick="openLightbox('${g.src}','${g.caption||''}')">
+      <img src="${g.src}" alt="${g.caption||''}">
+      <div class="gallery-item-label">${g.caption || g.date}</div>
+    </div>
+  `).join('');
 }
 
 function openLightbox(src, caption) {
@@ -4203,7 +4162,7 @@ function renderCalendar() {
         <div class="event-date-badge">${d.getDate()}<small>${MONTH_TH[d.getMonth()].substring(0,3)}</small></div>
         <div class="event-info">
           <div class="event-title">${ev.title}</div>
-          ${(ev.description||ev.desc) ? `<div class="event-desc">${ev.description||ev.desc}</div>` : ''}
+          ${ev.desc ? `<div class="event-desc">${ev.desc}</div>` : ''}
         </div>
         <span class="event-type-tag">${ev.type}</span>
         ${adminLoggedIn ? `<button class="btn-del" onclick="deleteEvent(${ev.id})">ลบ</button>` : ''}
@@ -4219,23 +4178,22 @@ function openAddEvent(dateStr) {
   document.getElementById('event-modal').classList.add('show');
 }
 
-async function saveEvent() {
+function saveEvent() {
   const date = document.getElementById('ev-date').value;
   const title = document.getElementById('ev-title').value.trim();
   const desc = document.getElementById('ev-desc').value.trim();
   const type = document.getElementById('ev-type').value;
   if (!date || !title) { showToast('กรุณากรอกวันที่และชื่อกิจกรรม', 'warn'); return; }
-  const res = await sbFetch('cal_events', 'POST', { date, title, description: desc, type });
-  if (res && res[0]) calEvents.push(res[0]);
+  calEvents.push({ id: Date.now(), date, title, desc, type });
+  save();
   closeModal('event-modal');
   renderCalendar();
   showToast('เพิ่มกิจกรรมเรียบร้อย ✓', 'success');
 }
 
-async function deleteEvent(id) {
-  await sbFetch('cal_events', 'DELETE', null, `?id=eq.${id}`);
+function deleteEvent(id) {
   calEvents = calEvents.filter(e => e.id !== id);
-  renderCalendar();
+  save(); renderCalendar();
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
@@ -4244,16 +4202,14 @@ function closeModal(id) { document.getElementById(id).classList.remove('show'); 
 function buildLeaderboard() {
   const score = {};
   checkinSessions.forEach(s => {
-    const list = s.checkedIn || s.checked || [];
-    list.forEach(c => {
+    s.checkedIn.forEach(c => {
       if (!score[c.ig]) score[c.ig] = { ig: c.ig, nick: c.nick, count: 0 };
       score[c.ig].count++;
     });
   });
   // Also count active session
   if (activeSession) {
-    const list = activeSession.checkedIn || activeSession.checked || [];
-    list.forEach(c => {
+    activeSession.checkedIn.forEach(c => {
       if (!score[c.ig]) score[c.ig] = { ig: c.ig, nick: c.nick, count: 0 };
       score[c.ig].count++;
     });
@@ -4602,12 +4558,10 @@ function showToast(msg, type = 'info') {
       splash.style.display = 'none';
       const ldr = document.getElementById('page-loader');
       if (ldr) { ldr.style.display = 'flex'; }
-      // Init app after splash
-      initApp().then(() => {
-        setTimeout(() => {
-          if (ldr) ldr.classList.add('hidden');
-        }, 1400);
-      });
+      // Hide loader after 1.4s
+      setTimeout(() => {
+        if (ldr) ldr.classList.add('hidden');
+      }, 1400);
     }, 500);
     // Play embedded welcome audio
     setTimeout(speakWelcome, 300);
@@ -4632,18 +4586,12 @@ async function initApp() {
   observeReveals();
 
   // Check active session expiry
-  if (activeSession) {
-    const endsAt = activeSession.endsAt || new Date(activeSession.ends_at).getTime();
-    activeSession.endsAt = endsAt;
-    if (!activeSession.name) activeSession.name = activeSession.label;
-    if (!activeSession.checkedIn) activeSession.checkedIn = activeSession.checked || [];
-    if (Date.now() > endsAt) {
-      await sbFetch('checkin_sessions', 'PATCH', { active: false }, `?id=eq.${activeSession.id}`);
-      checkinSessions.unshift({ ...activeSession });
-      activeSession = null;
-    } else {
-      startSessionTimer();
-    }
+  if (activeSession && Date.now() > activeSession.endsAt) {
+    checkinSessions.push({ ...activeSession });
+    activeSession = null;
+    save();
+  } else if (activeSession) {
+    startSessionTimer();
   }
 
   // Birthday check (run once per day)
@@ -4658,17 +4606,15 @@ async function initApp() {
 window.addEventListener('load', () => {
   const splash = document.getElementById('sound-splash');
   if (splash && splash.style.display !== 'none') {
-    // มี splash — รอให้ user กดก่อน ไม่ต้อง initApp ที่นี่
-    // initApp จะถูกเรียกใน enterSite() หลัง splash ปิด
+    // มี splash — รอให้ user กดก่อน แต่โหลดข้อมูลไว้ก่อนเลย
+    initApp();
   } else {
-    // ไม่มี splash — โหลดทันที
-    const ldr = document.getElementById('page-loader');
-    if (ldr) { ldr.style.display = 'flex'; }
-    initApp().then(() => {
-      setTimeout(() => {
-        if (ldr) ldr.classList.add('hidden');
-      }, 1400);
-    });
+    // ไม่มี splash — โหลดหลัง 1.4s (หลัง loader animation)
+    setTimeout(() => {
+      const ldr = document.getElementById('page-loader');
+      if (ldr) ldr.classList.add('hidden');
+      initApp();
+    }, 1400);
   }
 });
 </script>
