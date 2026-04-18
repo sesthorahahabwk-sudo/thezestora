@@ -2671,7 +2671,8 @@ let gallery = JSON.parse(localStorage.getItem('tz_gallery') || '[]');
 let calEvents = JSON.parse(localStorage.getItem('tz_cal_events') || '[]');
 let dmMessages = JSON.parse(localStorage.getItem('tz_dm') || '[]');
 const DEFAULT_WEBHOOK_BIRTHDAY = 'https://discord.com/api/webhooks/1495073922063012060/Xi1SpZkWLzMnVUysy-1rTi9jly76yhAw79E6eng2Xo-JIZxlVB0wtvWZ7chOS9_h4r0b';
-const DEFAULT_WEBHOOK_LEAVE = 'https://discord.com/api/webhooks/1495071381845708961/XP1oDJkzo18MOA37KuXIXTgSLh6TxqIFyrf0yuyRJiWK-MI0FUn9Lzxwd-TPHUEtQDDI';
+const DEFAULT_WEBHOOK_LEAVE    = 'https://discord.com/api/webhooks/1495071381845708961/XP1oDJkzo18MOA37KuXIXTgSLh6TxqIFyrf0yuyRJiWK-MI0FUn9Lzxwd-TPHUEtQDDI';
+const DEFAULT_WEBHOOK_APPROVE  = 'https://discord.com/api/webhooks/1495077890155352296/W-_6UoNmjxDwFcwlTGme8x3WQgQyUpHyz_KV4QigTdoDO2DCnH1XboI5JxHSJbT61Msj';
 let webhookBirthday = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY;
 let webhookLeave = localStorage.getItem('tz_webhook_leave') || DEFAULT_WEBHOOK_LEAVE;
 let webhookUrl = webhookBirthday; // backwards compat alias
@@ -3570,7 +3571,7 @@ async function approveMember(id) {
   updateHomeStats();
   updateAdminNavBadge();
 
-  const wh = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY; // ใช้ช่องเดิมหรือจะเพิ่ม webhook สมาชิกทีหลังได้
+  const wh = DEFAULT_WEBHOOK_APPROVE; // webhook แยกสำหรับอนุมัติสมาชิกใหม่
   if (wh) {
     try {
       await fetch(wh, { method:'POST', headers:{'Content-Type':'application/json'},
