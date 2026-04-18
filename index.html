@@ -2872,19 +2872,18 @@ async function submitLeave() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           embeds: [{
-            title: '🚪  leave request  •  THEZESTORA',
-            description: `> *"${reason}"*`,
-            color: 0xFF4D4D,
+            title: '🔴  THEZESTORA — คำขอออก',
+            description: `**${nick}** ได้ยื่นคำขอออกจากแก๊งค์`,
+            color: 0xED4245,
             fields: [
-              { name: '👤  ชื่อเล่น', value: `\`\`\`${nick}\`\`\``, inline: true },
-              { name: '📸  Instagram', value: `\`\`\`${igFull}\`\`\``, inline: true },
-              { name: '🏷️  GEN', value: `\`\`\`${gen}\`\`\``, inline: true },
-              { name: '📋  เหตุผลที่ออก', value: `> ${reason}`, inline: false }
+              { name: 'ชื่อเล่น', value: nick, inline: true },
+              { name: 'Instagram', value: igFull, inline: true },
+              { name: 'GEN', value: gen, inline: true },
+              { name: 'เหตุผล', value: reason, inline: false }
             ],
-            footer: { text: '⚡ THEZESTORA SYSTEM  •  auto-notify' },
+            footer: { text: 'THEZESTORA SYSTEM  •  leave request' },
             timestamp: new Date().toISOString()
-          }],
-          content: `||@everyone||  **⚠️ สมาชิกยื่นคำขอออก!**`
+          }]
         })
       });
     } catch(e) {}
@@ -3576,15 +3575,15 @@ async function approveMember(id) {
     try {
       await fetch(wh, { method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ embeds:[{
-          title: '✅  new member approved!  •  THEZESTORA',
-          description: `> ยินดีต้อนรับสมาชิกใหม่เข้าสู่แก๊งค์ 🎊\n> **${m.nick}** เป็นทางการแล้ว no cap! 🔥`,
-          color: 0x1E7A3C,
+          title: '🟢  THEZESTORA — สมาชิกใหม่',
+          description: `**${m.nick}** เพิ่งได้รับการอนุมัติเข้าแก๊งค์แล้ว! 🎉`,
+          color: 0x57F287,
           fields:[
-            { name:'👤  ชื่อเล่น', value:`\`\`\`${m.nick}\`\`\``, inline:true },
-            { name:'📸  Instagram', value:`[@${m.ig}](https://instagram.com/${m.ig.replace('@','')})`, inline:true },
-            { name:'🏷️  GEN', value:`\`\`\`${m.gen}\`\`\``, inline:true }
+            { name:'ชื่อเล่น', value: m.nick, inline: true },
+            { name:'Instagram', value: (m.ig.startsWith('@') ? m.ig : `@${m.ig}`), inline: true },
+            { name:'GEN', value: m.gen, inline: true }
           ],
-          footer: { text: '⚡ THEZESTORA SYSTEM  •  admin approved' },
+          footer: { text: 'THEZESTORA SYSTEM  •  admin approved' },
           timestamp: new Date().toISOString()
         }] }) });
     } catch(e) {}
@@ -3869,17 +3868,17 @@ function checkBirthdays() {
         try {
           await fetch(wh, { method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify({
-              content: `@everyone`,
+              content: `@everyone 🎂 วันนี้เป็นวันเกิดของ **${m.nick}** แล้ว!!`,
               embeds: [{
-                title: `🎂  happy birthday, ${m.nick}!  🎉`,
-                description: `> วันนี้เป็นวันพิเศษของ **${m.nick}** แล้ว!! 🥳\n> ขอให้มีความสุข เฮลตี้ กิ๊งก่ออ๊าก ตลอดปีเลยนะ~ ✨`,
-                color: 0xB44FFF,
+                title: `🎂  Happy Birthday, ${m.nick}!`,
+                description: `วันนี้เป็นวันเกิดของ **${m.nick}** แล้ว!! 🥳\nขอให้มีความสุขมากๆ ตลอดปีเลยนะ~ ✨`,
+                color: 0xEB459E,
                 fields: [
-                  { name: '📸  Instagram', value: `[@${m.ig}](https://instagram.com/${m.ig.replace('@','')})`, inline: true },
-                  { name: '🏷️  GEN', value: `${m.gen}`, inline: true }
+                  { name: 'Instagram', value: (m.ig.startsWith('@') ? m.ig : `@${m.ig}`), inline: true },
+                  { name: 'GEN', value: `${m.gen}`, inline: true }
                 ],
                 thumbnail: m.avatar ? { url: m.avatar } : undefined,
-                footer: { text: '🎊 THEZESTORA BIRTHDAY BOT  •  no cap, it\'s the vibe' },
+                footer: { text: 'THEZESTORA BIRTHDAY BOT' },
                 timestamp: new Date().toISOString()
               }]
             }) });
