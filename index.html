@@ -2643,6 +2643,30 @@ async function sbFetch(table, method='GET', body=null, query='') {
   return res.json().catch(() => null);
 }
 
+// ====== STATE ======
+let ADMIN_PASS = localStorage.getItem('tz_admin_pass') || 'zestora2025';
+let adminLoggedIn = sessionStorage.getItem('tz_admin_session') === '1';
+let members = [];
+let pendingMembers = [];
+let announcements = [];
+let leaveRequests = [];
+let gangRules = [];
+let checkinSessions = [];
+let activeSession = null;
+let polls = [];
+let gallery = [];
+let calEvents = [];
+let dmMessages = JSON.parse(localStorage.getItem('tz_dm') || '[]');
+const DEFAULT_WEBHOOK_BIRTHDAY = 'https://discord.com/api/webhooks/1495073922063012060/Xi1SpZkWLzMnVUysy-1rTi9jly76yhAw79E6eng2Xo-JIZxlVB0wtvWZ7chOS9_h4r0b';
+const DEFAULT_WEBHOOK_LEAVE    = 'https://discord.com/api/webhooks/1495071381845708961/XP1oDJkzo18MOA37KuXIXTgSLh6TxqIFyrf0yuyRJiWK-MI0FUn9Lzxwd-TPHUEtQDDI';
+const DEFAULT_WEBHOOK_APPROVE  = 'https://discord.com/api/webhooks/1495077890155352296/W-_6UoNmjxDwFcwlTGme8x3WQgQyUpHyz_KV4QigTdoDO2DCnH1XboI5JxHSJbT61Msj';
+let webhookBirthday = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY;
+let webhookLeave = localStorage.getItem('tz_webhook_leave') || DEFAULT_WEBHOOK_LEAVE;
+let webhookUrl = webhookBirthday; // backwards compat alias
+let lastSeenAnn = parseInt(localStorage.getItem('tz_last_seen_ann') || '0');
+let checkinCountdownTimer = null;
+let calYear, calMonth;
+
 async function sbLoad() {
   try {
     const [m, p, a, r, po, g, cs, ca, lr] = await Promise.all([
@@ -2672,29 +2696,6 @@ async function sbLoad() {
   } catch(e) { console.error('sbLoad error:', e); }
 }
 
-// ====== STATE ======
-let ADMIN_PASS = localStorage.getItem('tz_admin_pass') || 'zestora2025';
-let adminLoggedIn = sessionStorage.getItem('tz_admin_session') === '1';
-let members = [];
-let pendingMembers = [];
-let announcements = [];
-let leaveRequests = [];
-let gangRules = [];
-let checkinSessions = [];
-let activeSession = null;
-let polls = [];
-let gallery = [];
-let calEvents = [];
-let dmMessages = JSON.parse(localStorage.getItem('tz_dm') || '[]');
-const DEFAULT_WEBHOOK_BIRTHDAY = 'https://discord.com/api/webhooks/1495073922063012060/Xi1SpZkWLzMnVUysy-1rTi9jly76yhAw79E6eng2Xo-JIZxlVB0wtvWZ7chOS9_h4r0b';
-const DEFAULT_WEBHOOK_LEAVE    = 'https://discord.com/api/webhooks/1495071381845708961/XP1oDJkzo18MOA37KuXIXTgSLh6TxqIFyrf0yuyRJiWK-MI0FUn9Lzxwd-TPHUEtQDDI';
-const DEFAULT_WEBHOOK_APPROVE  = 'https://discord.com/api/webhooks/1495077890155352296/W-_6UoNmjxDwFcwlTGme8x3WQgQyUpHyz_KV4QigTdoDO2DCnH1XboI5JxHSJbT61Msj';
-let webhookBirthday = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY;
-let webhookLeave = localStorage.getItem('tz_webhook_leave') || DEFAULT_WEBHOOK_LEAVE;
-let webhookUrl = webhookBirthday; // backwards compat alias
-let lastSeenAnn = parseInt(localStorage.getItem('tz_last_seen_ann') || '0');
-let checkinCountdownTimer = null;
-let calYear, calMonth;
 
 function save() {
   // Only keep truly local/personal data in localStorage
@@ -4601,10 +4602,12 @@ function showToast(msg, type = 'info') {
       splash.style.display = 'none';
       const ldr = document.getElementById('page-loader');
       if (ldr) { ldr.style.display = 'flex'; }
-      // Hide loader after 1.4s
-      setTimeout(() => {
-        if (ldr) ldr.classList.add('hidden');
-      }, 1400);
+      // Init app after splash
+      initApp().then(() => {
+        setTimeout(() => {
+          if (ldr) ldr.classList.add('hidden');
+        }, 1400);
+      });
     }, 500);
     // Play embedded welcome audio
     setTimeout(speakWelcome, 300);
@@ -4629,12 +4632,18 @@ async function initApp() {
   observeReveals();
 
   // Check active session expiry
-  if (activeSession && Date.now() > activeSession.endsAt) {
-    checkinSessions.push({ ...activeSession });
-    activeSession = null;
-    save();
-  } else if (activeSession) {
-    startSessionTimer();
+  if (activeSession) {
+    const endsAt = activeSession.endsAt || new Date(activeSession.ends_at).getTime();
+    activeSession.endsAt = endsAt;
+    if (!activeSession.name) activeSession.name = activeSession.label;
+    if (!activeSession.checkedIn) activeSession.checkedIn = activeSession.checked || [];
+    if (Date.now() > endsAt) {
+      await sbFetch('checkin_sessions', 'PATCH', { active: false }, `?id=eq.${activeSession.id}`);
+      checkinSessions.unshift({ ...activeSession });
+      activeSession = null;
+    } else {
+      startSessionTimer();
+    }
   }
 
   // Birthday check (run once per day)
@@ -4649,15 +4658,17 @@ async function initApp() {
 window.addEventListener('load', () => {
   const splash = document.getElementById('sound-splash');
   if (splash && splash.style.display !== 'none') {
-    // มี splash — รอให้ user กดก่อน แต่โหลดข้อมูลไว้ก่อนเลย
-    initApp();
+    // มี splash — รอให้ user กดก่อน ไม่ต้อง initApp ที่นี่
+    // initApp จะถูกเรียกใน enterSite() หลัง splash ปิด
   } else {
-    // ไม่มี splash — โหลดหลัง 1.4s (หลัง loader animation)
-    setTimeout(() => {
-      const ldr = document.getElementById('page-loader');
-      if (ldr) ldr.classList.add('hidden');
-      initApp();
-    }, 1400);
+    // ไม่มี splash — โหลดทันที
+    const ldr = document.getElementById('page-loader');
+    if (ldr) { ldr.style.display = 'flex'; }
+    initApp().then(() => {
+      setTimeout(() => {
+        if (ldr) ldr.classList.add('hidden');
+      }, 1400);
+    });
   }
 });
 </script>
