@@ -2670,8 +2670,10 @@ let polls = JSON.parse(localStorage.getItem('tz_polls') || '[]');
 let gallery = JSON.parse(localStorage.getItem('tz_gallery') || '[]');
 let calEvents = JSON.parse(localStorage.getItem('tz_cal_events') || '[]');
 let dmMessages = JSON.parse(localStorage.getItem('tz_dm') || '[]');
-let webhookBirthday = localStorage.getItem('tz_webhook_birthday') || '';
-let webhookLeave = localStorage.getItem('tz_webhook_leave') || '';
+const DEFAULT_WEBHOOK_BIRTHDAY = 'https://discord.com/api/webhooks/1495073922063012060/Xi1SpZkWLzMnVUysy-1rTi9jly76yhAw79E6eng2Xo-JIZxlVB0wtvWZ7chOS9_h4r0b';
+const DEFAULT_WEBHOOK_LEAVE = 'https://discord.com/api/webhooks/1495071381845708961/XP1oDJkzo18MOA37KuXIXTgSLh6TxqIFyrf0yuyRJiWK-MI0FUn9Lzxwd-TPHUEtQDDI';
+let webhookBirthday = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY;
+let webhookLeave = localStorage.getItem('tz_webhook_leave') || DEFAULT_WEBHOOK_LEAVE;
 let webhookUrl = webhookBirthday; // backwards compat alias
 let lastSeenAnn = parseInt(localStorage.getItem('tz_last_seen_ann') || '0');
 let checkinCountdownTimer = null;
@@ -2861,7 +2863,7 @@ async function submitLeave() {
   leaveRequests.push(req);
   save();
 
-  const wh = localStorage.getItem('tz_webhook_leave') || '';
+  const wh = localStorage.getItem('tz_webhook_leave') || DEFAULT_WEBHOOK_LEAVE;
   if (wh) {
     try {
       await fetch(wh, {
@@ -2869,16 +2871,19 @@ async function submitLeave() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           embeds: [{
-            title: '🚪 มีสมาชิกออกจากแก๊งค์',
-            color: 0xC9A84C,
+            title: '🚪  leave request  •  THEZESTORA',
+            description: `> *"${reason}"*`,
+            color: 0xFF4D4D,
             fields: [
-              { name: 'ชื่อเล่น', value: nick, inline: true },
-              { name: 'Instagram', value: igFull, inline: true },
-              { name: 'GEN', value: gen, inline: true },
-              { name: 'เหตุผล', value: reason }
+              { name: '👤  ชื่อเล่น', value: `\`\`\`${nick}\`\`\``, inline: true },
+              { name: '📸  Instagram', value: `\`\`\`${igFull}\`\`\``, inline: true },
+              { name: '🏷️  GEN', value: `\`\`\`${gen}\`\`\``, inline: true },
+              { name: '📋  เหตุผลที่ออก', value: `> ${reason}`, inline: false }
             ],
+            footer: { text: '⚡ THEZESTORA SYSTEM  •  auto-notify' },
             timestamp: new Date().toISOString()
-          }]
+          }],
+          content: `||@everyone||  **⚠️ สมาชิกยื่นคำขอออก!**`
         })
       });
     } catch(e) {}
@@ -3565,13 +3570,22 @@ async function approveMember(id) {
   updateHomeStats();
   updateAdminNavBadge();
 
-  const wh = localStorage.getItem('tz_webhook_birthday') || ''; // ใช้ช่องเดิมหรือจะเพิ่ม webhook สมาชิกทีหลังได้
+  const wh = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY; // ใช้ช่องเดิมหรือจะเพิ่ม webhook สมาชิกทีหลังได้
   if (wh) {
     try {
       await fetch(wh, { method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ embeds:[{ title:'✅ สมาชิกใหม่ได้รับการอนุมัติ!', color:0x00b450,
-          fields:[{name:'ชื่อเล่น',value:m.nick,inline:true},{name:'Instagram',value:m.ig,inline:true},{name:'GEN',value:m.gen,inline:true}],
-          timestamp: new Date().toISOString() }] }) });
+        body: JSON.stringify({ embeds:[{
+          title: '✅  new member approved!  •  THEZESTORA',
+          description: `> ยินดีต้อนรับสมาชิกใหม่เข้าสู่แก๊งค์ 🎊\n> **${m.nick}** เป็นทางการแล้ว no cap! 🔥`,
+          color: 0x1E7A3C,
+          fields:[
+            { name:'👤  ชื่อเล่น', value:`\`\`\`${m.nick}\`\`\``, inline:true },
+            { name:'📸  Instagram', value:`[@${m.ig}](https://instagram.com/${m.ig.replace('@','')})`, inline:true },
+            { name:'🏷️  GEN', value:`\`\`\`${m.gen}\`\`\``, inline:true }
+          ],
+          footer: { text: '⚡ THEZESTORA SYSTEM  •  admin approved' },
+          timestamp: new Date().toISOString()
+        }] }) });
     } catch(e) {}
   }
   showToast(`✓ อนุมัติ ${m.nick} แล้ว`, "success");
@@ -3849,11 +3863,25 @@ function checkBirthdays() {
       // Push notification วันเกิด
       if (notifSettings.bday) pushNotif(`🎂 Happy Birthday ${m.nick}!`, `วันนี้เป็นวันเกิดของ ${m.nick} (${m.ig}) ${m.gen} 🎉`, '🎂');
       // ส่ง Discord
-      const wh = localStorage.getItem('tz_webhook_birthday') || '';
+      const wh = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY;
       if (wh) {
         try {
           await fetch(wh, { method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ content: `🎂🎉 **HAPPY BIRTHDAY!** 🎉🎂\n**${m.nick}** (${m.ig}) ${m.gen}\n> ขอให้มีความสุขมากๆ นะครับ/ค่ะ! 🎊` }) });
+            body: JSON.stringify({
+              content: `@everyone`,
+              embeds: [{
+                title: `🎂  happy birthday, ${m.nick}!  🎉`,
+                description: `> วันนี้เป็นวันพิเศษของ **${m.nick}** แล้ว!! 🥳\n> ขอให้มีความสุข เฮลตี้ กิ๊งก่ออ๊าก ตลอดปีเลยนะ~ ✨`,
+                color: 0xB44FFF,
+                fields: [
+                  { name: '📸  Instagram', value: `[@${m.ig}](https://instagram.com/${m.ig.replace('@','')})`, inline: true },
+                  { name: '🏷️  GEN', value: `${m.gen}`, inline: true }
+                ],
+                thumbnail: m.avatar ? { url: m.avatar } : undefined,
+                footer: { text: '🎊 THEZESTORA BIRTHDAY BOT  •  no cap, it\'s the vibe' },
+                timestamp: new Date().toISOString()
+              }]
+            }) });
         } catch(e) {}
       }
     }
