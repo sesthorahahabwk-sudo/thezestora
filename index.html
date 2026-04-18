@@ -2658,7 +2658,7 @@ async function sbLoad() {
 
 // ====== STATE ======
 let ADMIN_PASS = localStorage.getItem('tz_admin_pass') || 'zestora2025';
-let adminLoggedIn = false;
+let adminLoggedIn = sessionStorage.getItem('tz_admin_session') === '1';
 let members = [];
 let pendingMembers = [];
 let announcements = [];
@@ -2716,7 +2716,18 @@ function showPage(id) {
   if (id === 'calendar') { if (!calYear) initCalendar(); renderCalendar(); }
   if (id === 'leaderboard') { renderLeaderboard(); }
   if (id === 'dm') { markDMSeen(); setTimeout(observeReveals, 50); }
-  if (id === 'admin' && adminLoggedIn) renderAdminPanel();
+  if (id === 'admin') {
+    if (adminLoggedIn) {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('admin-panel-screen').style.display = 'block';
+      if (webhookBirthday) document.getElementById('webhook-birthday').value = webhookBirthday;
+      if (webhookLeave) document.getElementById('webhook-leave').value = webhookLeave;
+      renderAdminPanel();
+    } else {
+      document.getElementById('admin-login-screen').style.display = 'block';
+      document.getElementById('admin-panel-screen').style.display = 'none';
+    }
+  }
   if (id === 'home') updateHomeStats();
   if (id === 'verify' || id === 'leave') setTimeout(observeReveals, 50);
 
@@ -3322,6 +3333,7 @@ function adminLogin() {
   const pw = document.getElementById('admin-pw').value;
   if (pw === ADMIN_PASS) {
     adminLoggedIn = true;
+    sessionStorage.setItem('tz_admin_session', '1');
     document.getElementById('admin-login-screen').style.display = 'none';
     document.getElementById('admin-panel-screen').style.display = 'block';
     if (webhookBirthday) document.getElementById('webhook-birthday').value = webhookBirthday;
@@ -3337,6 +3349,7 @@ function adminLogin() {
 
 function adminLogout() {
   adminLoggedIn = false;
+  sessionStorage.removeItem('tz_admin_session');
   document.getElementById('admin-login-screen').style.display = 'block';
   document.getElementById('admin-panel-screen').style.display = 'none';
   document.getElementById('admin-pw').value = '';
