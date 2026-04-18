@@ -4522,7 +4522,6 @@ function showToast(msg, type = 'info') {
         if (ldr) ldr.classList.add('hidden');
       }, 1400);
     }, 500);
-
     // Play embedded welcome audio
     setTimeout(speakWelcome, 300);
   }
@@ -4534,39 +4533,48 @@ function showToast(msg, type = 'info') {
 })();
 
 // ====== INIT ======
+async function initApp() {
+  // โหลดข้อมูลจาก Supabase ก่อนเสมอ
+  await sbLoad();
+  updateBadge();
+  updateDMBadge();
+  updateAdminNavBadge();
+  updateHomeStats();
+  renderMembers();
+  renderAnnouncements();
+  observeReveals();
+
+  // Check active session expiry
+  if (activeSession && Date.now() > activeSession.endsAt) {
+    checkinSessions.push({ ...activeSession });
+    activeSession = null;
+    save();
+  } else if (activeSession) {
+    startSessionTimer();
+  }
+
+  // Birthday check (run once per day)
+  const lastBdayCheck = localStorage.getItem('tz_bday_check');
+  const todayStr = new Date().toDateString();
+  if (lastBdayCheck !== todayStr) {
+    localStorage.setItem('tz_bday_check', todayStr);
+    setTimeout(checkBirthdays, 2000);
+  }
+}
+
 window.addEventListener('load', () => {
   const splash = document.getElementById('sound-splash');
-  const loaderDelay = (splash && splash.style.display !== 'none') ? 99999 : 1400;
-  setTimeout(async () => {
-    // Load shared data from Supabase first
-    await sbLoad();
-    const ldr = document.getElementById('page-loader');
-    if (ldr) ldr.classList.add('hidden');
-    updateBadge();
-    updateDMBadge();
-    updateAdminNavBadge();
-    updateHomeStats();
-    renderMembers();
-    renderAnnouncements();
-    observeReveals();
-
-    // Check active session expiry
-    if (activeSession && Date.now() > activeSession.endsAt) {
-      checkinSessions.push({ ...activeSession });
-      activeSession = null;
-      save();
-    } else if (activeSession) {
-      startSessionTimer();
-    }
-
-    // Birthday check (run once per day)
-    const lastBdayCheck = localStorage.getItem('tz_bday_check');
-    const todayStr = new Date().toDateString();
-    if (lastBdayCheck !== todayStr) {
-      localStorage.setItem('tz_bday_check', todayStr);
-      setTimeout(checkBirthdays, 2000);
-    }
-  }, loaderDelay);
+  if (splash && splash.style.display !== 'none') {
+    // มี splash — รอให้ user กดก่อน แต่โหลดข้อมูลไว้ก่อนเลย
+    initApp();
+  } else {
+    // ไม่มี splash — โหลดหลัง 1.4s (หลัง loader animation)
+    setTimeout(() => {
+      const ldr = document.getElementById('page-loader');
+      if (ldr) ldr.classList.add('hidden');
+      initApp();
+    }, 1400);
+  }
 });
 </script>
 </body>
