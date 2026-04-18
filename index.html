@@ -3130,7 +3130,7 @@ function adminSearchFilter(val) {
               ${badges.length > 0 ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">${badges.map(b=>`<span class="badge badge-${b.tier}">${b.icon}</span>`).join('')}</div>` : ''}
             </div>
           </div>
-          <button class="btn-del" onclick="if(confirm('ลบ ${m.nick} ออกจากระบบ?')){members=members.filter(x=>x.ig!=='${m.ig}');save();updateHomeStats();renderAdminPanel();clearAdminSearch();showToast('ลบแล้ว', 'success');}">ลบ</button>
+          <button class="btn-del" onclick="deleteMemberById('${m.id}')">ลบ</button>
         </div>`;
       }).join('');
       count += found.length;
@@ -3400,8 +3400,8 @@ function renderAdminPanel() {
           </div>
         </div>
         <div style="flex-shrink:0;">
-          <button class="btn-approve" onclick="approveMember(${p.id})">✓ อนุมัติ</button>
-          <button class="btn-reject" onclick="rejectMember(${p.id})">✕ ปฏิเสธ</button>
+          <button class="btn-approve" onclick="approveMember('${p.id}')">✓ อนุมัติ</button>
+          <button class="btn-reject" onclick="rejectMember('${p.id}')">✕ ปฏิเสธ</button>
         </div>
       </div>
     `).join('');
@@ -3469,7 +3469,7 @@ function renderAdminPanel() {
           <div class="post-item-title">${a.title}</div>
           <div class="post-item-meta">${a.type} · ${a.date}</div>
         </div>
-        <button class="btn-del" onclick="deleteAnn(${a.id})">ลบ</button>
+        <button class="btn-del" onclick="deleteAnn('${a.id}')">ลบ</button>
       </div>
     `).join('');
   }
