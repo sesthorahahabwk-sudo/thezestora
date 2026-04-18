@@ -2623,12 +2623,45 @@ function animateCounter(el, target, duration = 800) {
   requestAnimationFrame(step);
 }
 
+// ====== SUPABASE CONFIG ======
+const SB_URL = 'https://zezyrvlgmbokujidmpkc.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplenlydmxnbWJva3VqaWRtcGtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTEwMzEsImV4cCI6MjA5MjA4NzAzMX0.cT9BQnwQYC2JZ3IgK2OLgJDMDzEraNr1rofcOzathj0';
+
+async function sbFetch(table, method='GET', body=null, query='') {
+  const res = await fetch(`${SB_URL}/rest/v1/${table}${query}`, {
+    method,
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : 'return=minimal'
+    },
+    body: body ? JSON.stringify(body) : null
+  });
+  if (!res.ok) { const e = await res.text(); console.error('Supabase error:', e); return null; }
+  if (method === 'DELETE' || method === 'PATCH') return true;
+  return res.json().catch(() => null);
+}
+
+async function sbLoad() {
+  try {
+    const [m, p, a] = await Promise.all([
+      sbFetch('members','GET',null,'?order=created_at.asc'),
+      sbFetch('pending_members','GET',null,'?order=created_at.asc'),
+      sbFetch('announcements','GET',null,'?order=created_at.desc'),
+    ]);
+    if (m) members = m;
+    if (p) pendingMembers = p;
+    if (a) announcements = a;
+  } catch(e) { console.error('sbLoad error:', e); }
+}
+
 // ====== STATE ======
 let ADMIN_PASS = localStorage.getItem('tz_admin_pass') || 'zestora2025';
 let adminLoggedIn = false;
-let members = JSON.parse(localStorage.getItem('tz_members') || '[]');
-let pendingMembers = JSON.parse(localStorage.getItem('tz_pending') || '[]');
-let announcements = JSON.parse(localStorage.getItem('tz_announcements') || '[]');
+let members = [];
+let pendingMembers = [];
+let announcements = [];
 let leaveRequests = JSON.parse(localStorage.getItem('tz_leave') || '[]');
 let gangRules = JSON.parse(localStorage.getItem('tz_rules') || '[]');
 let checkinSessions = JSON.parse(localStorage.getItem('tz_checkin_sessions') || '[]');
@@ -2645,9 +2678,7 @@ let checkinCountdownTimer = null;
 let calYear, calMonth;
 
 function save() {
-  localStorage.setItem('tz_members', JSON.stringify(members));
-  localStorage.setItem('tz_pending', JSON.stringify(pendingMembers));
-  localStorage.setItem('tz_announcements', JSON.stringify(announcements));
+  // Local-only data (not shared)
   localStorage.setItem('tz_leave', JSON.stringify(leaveRequests));
   localStorage.setItem('tz_rules', JSON.stringify(gangRules));
   localStorage.setItem('tz_checkin_sessions', JSON.stringify(checkinSessions));
@@ -2753,7 +2784,7 @@ function previewAvatar(input, previewId) {
 }
 
 // ====== VERIFY SUBMIT — ส่งรออนุมัติ ======
-function submitVerify() {
+async function submitVerify() {
   const ig = document.getElementById('v-ig').value.trim();
   const nick = document.getElementById('v-nick').value.trim();
   const dob = document.getElementById('v-dob').value;
@@ -2769,19 +2800,23 @@ function submitVerify() {
   if (alreadyMember) { showToast('IG นี้เป็นสมาชิกอยู่แล้ว', 'warn'); return; }
   if (alreadyPending) { showToast('IG นี้รออนุมัติอยู่แล้ว', 'warn'); return; }
 
-  pendingMembers.push({
-    id: Date.now(),
-    ig: igFull,
-    nick, dob, gen,
-    avatar: verifyImgData || null,
-    submitDate: new Date().toLocaleDateString('th-TH')
-  });
-
   // Loading state feedback
   const btn = document.querySelector('#page-verify .btn-submit');
   if (btn) { btn.classList.add('loading'); btn.textContent = 'กำลังส่ง...'; }
 
-  save();
+  const newPending = {
+    ig: igFull, nick, dob, gen,
+    avatar: verifyImgData || null,
+    submit_date: new Date().toLocaleDateString('th-TH')
+  };
+  const res = await sbFetch('pending_members', 'POST', newPending);
+  if (res && res[0]) {
+    pendingMembers.push({ ...res[0], id: res[0].id });
+  } else {
+    showToast('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+    if (btn) { btn.classList.remove('loading'); btn.textContent = 'ยืนยันข้อมูล →'; }
+    return;
+  }
   verifyImgData = null;
   updateAdminNavBadge();
   document.getElementById('verify-preview').innerHTML = '?';
@@ -2809,6 +2844,10 @@ async function submitLeave() {
 
   // ลบสมาชิกออกจากระบบ
   const before = members.length;
+  const toDelMembers = members.filter(m => m.ig.toLowerCase() === igFull.toLowerCase());
+  const toDelPending = pendingMembers.filter(m => m.ig.toLowerCase() === igFull.toLowerCase());
+  for (const dm of toDelMembers) { await sbFetch('members', 'DELETE', null, `?id=eq.${dm.id}`); }
+  for (const dp of toDelPending) { await sbFetch('pending_members', 'DELETE', null, `?id=eq.${dp.id}`); }
   members = members.filter(m => m.ig.toLowerCase() !== igFull.toLowerCase());
   // ลบ pending ด้วย
   pendingMembers = pendingMembers.filter(m => m.ig.toLowerCase() !== igFull.toLowerCase());
@@ -3313,13 +3352,16 @@ function saveWebhookLeave() {
   showToast('บันทึก Webhook คำขอออกเรียบร้อยแล้ว ✓', 'success');
 }
 
-function postAnnouncement() {
+async function postAnnouncement() {
   const type = document.getElementById('ann-type').value;
   const title = document.getElementById('ann-title-input').value.trim();
   const body = document.getElementById('ann-body-input').value.trim();
   if (!title || !body) { showToast('กรุณากรอกหัวข้อและเนื้อหา', 'warn'); return; }
 
-  announcements.push({ id: Date.now(), type, title, body, date: new Date().toLocaleDateString('th-TH') });
+  const annRes = await sbFetch('announcements', 'POST', { type, title, body, date: new Date().toLocaleDateString('th-TH') });
+  if (annRes && annRes[0]) {
+    announcements.unshift({ ...annRes[0], id: annRes[0].id });
+  }
   save();
   updateBadge();
   if (notifSettings.ann) pushNotif('ประกาศใหม่: ' + title, body.substring(0, 80), '📣');
@@ -3330,7 +3372,8 @@ function postAnnouncement() {
   renderAdminPanel();
 }
 
-function deleteAnn(id) {
+async function deleteAnn(id) {
+  await sbFetch('announcements', 'DELETE', null, `?id=eq.${id}`);
   announcements = announcements.filter(a => a.id !== id);
   save(); updateBadge();
   renderAdminPanel();
@@ -3511,7 +3554,12 @@ async function approveMember(id) {
   const idx = pendingMembers.findIndex(m => m.id === id);
   if (idx === -1) return;
   const m = pendingMembers[idx];
-  members.push({ ...m, joinDate: new Date().toLocaleDateString('th-TH') });
+  const newMember = { ig: m.ig, nick: m.nick, dob: m.dob, gen: m.gen, avatar: m.avatar, join_date: new Date().toLocaleDateString('th-TH') };
+  const res = await sbFetch('members', 'POST', newMember);
+  if (res && res[0]) {
+    members.push({ ...res[0], id: res[0].id });
+  }
+  await sbFetch('pending_members', 'DELETE', null, `?id=eq.${id}`);
   pendingMembers.splice(idx, 1);
   save();
   updateHomeStats();
@@ -3530,10 +3578,11 @@ async function approveMember(id) {
   renderAdminPanel();
 }
 
-function rejectMember(id) {
+async function rejectMember(id) {
   const idx = pendingMembers.findIndex(m => m.id === id);
   if (idx === -1) return;
   const m = pendingMembers[idx];
+  await sbFetch('pending_members', 'DELETE', null, `?id=eq.${id}`);
   pendingMembers.splice(idx, 1);
   save();
   updateAdminNavBadge();
@@ -4486,10 +4535,11 @@ function showToast(msg, type = 'info') {
 
 // ====== INIT ======
 window.addEventListener('load', () => {
-  // If splash was already dismissed (e.g. direct load), ensure loader shows briefly then hides
   const splash = document.getElementById('sound-splash');
   const loaderDelay = (splash && splash.style.display !== 'none') ? 99999 : 1400;
-  setTimeout(() => {
+  setTimeout(async () => {
+    // Load shared data from Supabase first
+    await sbLoad();
     const ldr = document.getElementById('page-loader');
     if (ldr) ldr.classList.add('hidden');
     updateBadge();
