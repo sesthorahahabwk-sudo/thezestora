@@ -1587,6 +1587,94 @@ input[type="file"] { display: none; }
 .btn-export-icon { font-size: 22px; flex-shrink: 0; }
 .btn-export-label { font-size: 12px; color: var(--gray); margin-top: 2px; font-weight: 400; }
 
+/* ====== CHANGE INFO PAGE — STEP UI ====== */
+.ci-steps {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin: 0 auto 2rem; max-width: 480px;
+}
+.ci-step {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  flex: 0 0 auto;
+}
+.ci-step-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--black3); border: 2px solid var(--gray2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--gray);
+  transition: all 0.3s;
+}
+.ci-step.active .ci-step-num {
+  background: var(--red); border-color: var(--red);
+  color: white; box-shadow: 0 0 16px var(--red-glow);
+}
+.ci-step.done .ci-step-num {
+  background: rgba(30,122,60,0.2); border-color: var(--red);
+  color: var(--red);
+}
+.ci-step-label { font-size: 11px; color: var(--gray); letter-spacing: 0.5px; white-space: nowrap; }
+.ci-step.active .ci-step-label { color: var(--white); }
+.ci-step-line { flex: 1; height: 2px; background: var(--gray2); margin: 0 8px; margin-bottom: 20px; min-width: 40px; transition: background 0.3s; }
+.ci-step-line.done { background: var(--red); }
+
+.ci-panel { text-align: center; }
+.ci-panel-icon { font-size: 36px; margin-bottom: 8px; }
+
+.ci-profile-found {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(30,122,60,0.08); border: 1px solid rgba(30,122,60,0.25);
+  padding: 14px 18px; margin-bottom: 4px; text-align: left;
+}
+.ci-profile-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  overflow: hidden; background: var(--black2); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gray);
+  border: 2px solid var(--red);
+}
+.ci-profile-name { font-weight: 700; color: var(--white); font-size: 15px; }
+.ci-profile-meta { color: var(--gray); font-size: 12px; margin-top: 3px; }
+
+.ci-current-profile {
+  display: flex; align-items: center; gap: 18px;
+  padding: 16px 0; margin-bottom: 4px; text-align: left;
+}
+.ci-current-avatar-wrap { position: relative; flex-shrink: 0; }
+.ci-big-avatar {
+  width: 68px; height: 68px; border-radius: 50%;
+  overflow: hidden; background: var(--black2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--gray);
+  border: 2px solid var(--red); box-shadow: 0 0 16px var(--red-glow);
+}
+.ci-avatar-badge {
+  position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+  background: var(--red); color: white; font-size: 9px; font-weight: 700;
+  padding: 2px 6px; letter-spacing: 0.5px; white-space: nowrap;
+}
+
+.ci-avatar-upload-row {
+  display: flex; align-items: center; gap: 16px; margin-top: 8px; text-align: left;
+}
+.ci-avatar-upload-preview {
+  width: 64px; height: 64px; border-radius: 50%;
+  overflow: hidden; background: var(--black2); border: 2px dashed var(--gray2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: var(--gray); flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+.ci-avatar-upload-preview.has-image { border-style: solid; border-color: var(--red); }
+.ci-avatar-upload-info { flex: 1; }
+.ci-clear-btn {
+  background: none; border: 1px solid var(--gray2); color: var(--gray);
+  font-size: 11px; padding: 4px 10px; cursor: pointer; margin-top: 6px;
+  font-family: 'Sarabun', sans-serif; transition: all 0.2s;
+}
+.ci-clear-btn:hover { border-color: var(--red); color: var(--red); }
+
+.chacc-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
+@media (max-width: 600px) { .chacc-fields { grid-template-columns: 1fr; } }
+.chacc-hint { font-size: 11px; color: var(--gray); margin-top: 4px; }
+
 /* ====== CHANGE PASSWORD MODAL ====== */
 .chpw-section {
   background: var(--black3); border: 1px solid var(--gray2);
@@ -1708,6 +1796,7 @@ input[type="file"] { display: none; }
     <button class="nav-btn" onclick="showPage('leaderboard')">Leaderboard</button>
     <button class="nav-btn" onclick="showPage('dm')" id="nav-dm-btn" style="position:relative;">DM Admin<span class="nav-badge" id="nav-dm-badge" style="display:none;background:#e65c00;"></span></button>
     <button class="nav-btn" onclick="showPage('verify')">ยืนยันตัวตน</button>
+    <button class="nav-btn" onclick="showPage('changeinfo')">เปลี่ยนข้อมูล</button>
     <button class="nav-btn" onclick="showPage('leave')">ขอออก</button>
     <button class="nav-btn" onclick="showPage('admin')" id="nav-admin-btn" style="position:relative;">Admin<span class="nav-badge" id="nav-admin-badge" style="display:none;background:#ffa500;"></span></button>
   </div>
@@ -1731,6 +1820,7 @@ input[type="file"] { display: none; }
   <button class="mobile-btn" onclick="showPage('leaderboard');closeMobileMenu()">Leaderboard</button>
   <button class="mobile-btn" onclick="showPage('dm');closeMobileMenu()">DM Admin</button>
   <button class="mobile-btn" onclick="showPage('verify');closeMobileMenu()">ยืนยันตัวตน</button>
+  <button class="mobile-btn" onclick="showPage('changeinfo');closeMobileMenu()">เปลี่ยนข้อมูล</button>
   <button class="mobile-btn" onclick="showPage('leave');closeMobileMenu()">ขอออก</button>
   <button class="mobile-btn" onclick="showPage('admin');closeMobileMenu()">Admin</button>
 </div>
@@ -2101,6 +2191,136 @@ input[type="file"] { display: none; }
   </div>
 </div>
 
+<!-- ====== CHANGE INFO PAGE ====== -->
+<div id="page-changeinfo" class="page">
+  <div class="page-header">
+    <h1>อัปเดต<span>ข้อมูล</span></h1>
+    <p>เปลี่ยน Instagram / ชื่อเล่น / รูปโปรไฟล์ของคุณ</p>
+  </div>
+  <div class="container">
+
+    <!-- STEP INDICATOR -->
+    <div class="ci-steps reveal">
+      <div class="ci-step active" id="cistep-1">
+        <div class="ci-step-num">1</div>
+        <div class="ci-step-label">ค้นหาบัญชี</div>
+      </div>
+      <div class="ci-step-line"></div>
+      <div class="ci-step" id="cistep-2">
+        <div class="ci-step-num">2</div>
+        <div class="ci-step-label">ยืนยันตัวตน</div>
+      </div>
+      <div class="ci-step-line"></div>
+      <div class="ci-step" id="cistep-3">
+        <div class="ci-step-num">3</div>
+        <div class="ci-step-label">แก้ไขข้อมูล</div>
+      </div>
+    </div>
+
+    <!-- STEP 1: ค้นหา IG -->
+    <div class="form-card reveal ci-panel" id="ci-panel-1">
+      <div class="ci-panel-icon">🔍</div>
+      <div class="form-title" style="font-size:22px;">ค้นหา<span>บัญชี</span></div>
+      <div class="form-divider"></div>
+      <div class="form-sub">ใส่ Instagram เดิมของคุณที่สมัครไว้ในระบบ</div>
+      <div class="form-group" style="margin-top:1.5rem;">
+        <label class="form-label">Instagram เดิมของคุณ</label>
+        <input class="form-input" type="text" id="chacc-search-ig"
+          placeholder="@yourusername" autocomplete="off"
+          oninput="autoAtPrefix(this)"
+          onkeydown="if(event.key==='Enter')chaccLookup()">
+      </div>
+      <button class="btn-submit" onclick="chaccLookup()">ค้นหาบัญชี →</button>
+    </div>
+
+    <!-- STEP 2: ยืนยันวันเกิด -->
+    <div class="form-card reveal ci-panel" id="ci-panel-2" style="display:none;">
+      <!-- โปรไฟล์ปัจจุบัน -->
+      <div class="ci-profile-found">
+        <div id="chacc-avatar" class="ci-profile-avatar"></div>
+        <div>
+          <div id="chacc-result-name" class="ci-profile-name"></div>
+          <div id="chacc-result-meta" class="ci-profile-meta"></div>
+        </div>
+      </div>
+      <div class="ci-panel-icon" style="margin-top:1.2rem;">🔐</div>
+      <div class="form-title" style="font-size:22px;">ยืนยัน<span>ตัวตน</span></div>
+      <div class="form-divider"></div>
+      <div class="form-sub">ใส่วันเกิดที่ลงทะเบียนไว้เพื่อยืนยันว่าเป็นบัญชีของคุณ</div>
+      <div class="form-group" style="margin-top:1.5rem;">
+        <label class="form-label">วัน + ปีเกิด พ.ศ. <span style="color:var(--gray);font-weight:400;">(เช่น 172551)</span></label>
+        <input class="form-input" type="text" id="chacc-verify-dob"
+          placeholder="172551" maxlength="6" inputmode="numeric"
+          oninput="this.value=this.value.replace(/\D/g,'')"
+          onkeydown="if(event.key==='Enter')chaccVerify()"
+          style="font-size:26px;letter-spacing:8px;font-family:'Bebas Neue',sans-serif;text-align:center;">
+        <div class="chacc-hint" style="text-align:center;margin-top:8px;">วันเกิด 2 หลัก + ปี พ.ศ. 4 หลัก (ไม่มีเดือน)</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button class="btn-outline" onclick="chaccReset()" style="flex:1;padding:14px;">← ย้อนกลับ</button>
+        <button class="btn-submit" onclick="chaccVerify()" style="flex:2;">ยืนยัน →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: แก้ไขข้อมูล -->
+    <div class="form-card reveal ci-panel" id="ci-panel-3" style="display:none;">
+
+      <!-- โปรไฟล์ปัจจุบัน (ขนาดใหญ่) -->
+      <div class="ci-current-profile">
+        <div class="ci-current-avatar-wrap">
+          <div id="chacc-big-avatar" class="ci-big-avatar"></div>
+          <div class="ci-avatar-badge">ปัจจุบัน</div>
+        </div>
+        <div>
+          <div id="chacc-big-name" style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--white);"></div>
+          <div id="chacc-big-ig" style="color:var(--red);font-size:13px;margin-top:2px;"></div>
+          <div id="chacc-big-gen" style="color:var(--gray);font-size:12px;margin-top:2px;"></div>
+        </div>
+      </div>
+
+      <div class="form-divider"></div>
+      <div class="form-sub" style="margin-bottom:1.5rem;">✏️ แก้เฉพาะช่องที่ต้องการเปลี่ยน — ช่องว่าง = ไม่เปลี่ยน</div>
+
+      <!-- รูปโปรไฟล์ใหม่ -->
+      <div class="form-group">
+        <label class="form-label">รูปโปรไฟล์ใหม่</label>
+        <div class="ci-avatar-upload-row">
+          <div id="chacc-new-avatar-preview" class="ci-avatar-upload-preview">🖼️</div>
+          <div class="ci-avatar-upload-info">
+            <label class="upload-btn-label" for="chacc-new-avatar-input">เลือกรูปใหม่</label>
+            <input type="file" id="chacc-new-avatar-input" accept="image/*" style="display:none;" onchange="chaccPreviewAvatar(this)">
+            <div class="chacc-hint" style="margin-top:6px;">JPG / PNG ไม่เกิน 5MB<br>ไม่เลือก = รูปเดิม</div>
+            <button id="chacc-clear-avatar" class="ci-clear-btn" style="display:none;" onclick="chaccClearAvatar()">✕ ยกเลิกรูปใหม่</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- IG + ชื่อ -->
+      <div class="chacc-fields">
+        <div class="form-group">
+          <label class="form-label">Instagram ใหม่</label>
+          <input class="form-input" type="text" id="chacc-new-ig"
+            placeholder="@ig_ใหม่ หรือเว้นว่างไว้"
+            oninput="autoAtPrefix(this)">
+          <div class="chacc-hint">ว่างไว้ = IG ไม่เปลี่ยน</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ชื่อเล่นใหม่</label>
+          <input class="form-input" type="text" id="chacc-new-nick"
+            placeholder="ชื่อเล่นใหม่ หรือเว้นว่างไว้">
+          <div class="chacc-hint">ว่างไว้ = ชื่อไม่เปลี่ยน</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn-outline" onclick="chaccReset()" style="flex:1;padding:14px;">← เริ่มใหม่</button>
+        <button class="btn-submit" onclick="chaccSave()" style="flex:2;">💾 บันทึกการเปลี่ยนแปลง</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ====== LEAVE PAGE ====== -->
 <div id="page-leave" class="page">
   <div class="page-header">
@@ -2376,6 +2596,57 @@ input[type="file"] { display: none; }
       </div>
       <button class="btn-outline" onclick="sendTestNotif()" style="padding:9px 20px;font-size:13px;margin-bottom:2rem;" id="btn-test-notif" style="display:none;">ทดสอบส่งการแจ้งเตือน</button>
 
+      <!-- ====== BG MUSIC ====== -->
+      <div class="section-title" style="margin-top:2.5rem;">🎵 เพลงพื้นหลัง (BGM)</div>
+      <div style="background:var(--gray2);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;">
+        <p style="font-size:12px;color:var(--gray);margin-bottom:14px;line-height:1.7;">เลือกวิธีใส่เพลง BGM — อัปโหลดไฟล์ หรือใส่ URL โดยตรงก็ได้ครับ เพลงจะเล่นอัตโนมัติทุกครั้งที่เปิดเว็บ</p>
+
+        <!-- TAB SWITCHER -->
+        <div style="display:flex;gap:4px;background:rgba(0,0,0,0.3);border-radius:8px;padding:3px;margin-bottom:16px;">
+          <button id="bgtab-file" onclick="bgTab('file')" style="flex:1;padding:8px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;background:var(--red);color:#fff;transition:all 0.2s;">📁 อัปโหลดไฟล์</button>
+          <button id="bgtab-url" onclick="bgTab('url')" style="flex:1;padding:8px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;background:transparent;color:var(--gray);transition:all 0.2s;">🔗 ใส่ URL</button>
+        </div>
+
+        <!-- FILE UPLOAD PANEL -->
+        <div id="bgpanel-file">
+          <div class="form-group" style="margin-bottom:8px;">
+            <label class="form-label">ไฟล์เพลง (MP3, WAV, OGG)</label>
+            <input type="file" accept="audio/*" onchange="saveBgMusic(this)" style="width:100%;background:var(--black2);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--white);font-size:13px;">
+          </div>
+          <p style="font-size:11px;color:var(--gray);margin-bottom:12px;line-height:1.6;">⚠ ถ้าไฟล์ใหญ่เกิน ~4MB อาจเต็ม Supabase — ให้สลับไปใช้ URL แทนครับ</p>
+        </div>
+
+        <!-- URL INPUT PANEL -->
+        <div id="bgpanel-url" style="display:none;">
+          <div class="form-group" style="margin-bottom:8px;">
+            <label class="form-label">URL เพลง (Direct MP3 / Dropbox)</label>
+            <input class="form-input" id="bgmusic-url" type="url" placeholder="https://example.com/song.mp3" oninput="previewBgURL()" style="font-size:13px;">
+          </div>
+          <div style="background:rgba(220,80,80,0.12);border:1px solid rgba(220,80,80,0.3);border-radius:8px;padding:10px 13px;margin-bottom:10px;">
+            <div style="font-size:11px;font-weight:700;color:#ff7070;margin-bottom:4px;">⚠️ Google Drive ใช้ไม่ได้ครับ (CORS blocked)</div>
+            <div style="font-size:11px;color:var(--gray);line-height:1.7;">ให้ใช้ <b style="color:var(--white);">Dropbox</b>: อัปโหลดเพลง → Share → Copy link → แปะที่นี่</div>
+          </div>
+          <div style="background:rgba(30,122,60,0.08);border:1px solid var(--border);border-radius:8px;padding:10px 13px;margin-bottom:10px;">
+            <div style="font-size:11px;color:var(--gray);line-height:1.9;">✅ <b>Dropbox:</b> https://www.dropbox.com/scl/fi/xxx/song.mp3?rlkey=xxx<br>✅ <b>Direct MP3:</b> https://yoursite.com/song.mp3</div>
+          </div>
+          <button class="btn-outline" onclick="saveBgURL()" style="padding:8px 18px;font-size:13px;">💾 บันทึก URL</button>
+        </div>
+
+        <!-- VOLUME -->
+        <div class="form-group" style="margin-top:14px;margin-bottom:12px;">
+          <label class="form-label">ระดับเสียง (Volume)</label>
+          <input type="range" id="bgmusic-vol" min="0" max="1" step="0.05" value="0.3" oninput="setBgVol()" style="width:100%;accent-color:var(--red);">
+        </div>
+
+        <!-- CONTROLS -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-outline" onclick="testBgMusic()" style="padding:8px 16px;font-size:13px;">▶ ทดสอบเล่น</button>
+          <button class="btn-outline" onclick="stopBgMusic();showToast('หยุดเพลงพื้นหลังแล้ว')" style="padding:8px 16px;font-size:13px;">⏹ หยุด</button>
+          <button class="btn-outline" onclick="removeBgMusic()" style="padding:8px 16px;font-size:13px;color:#ff7070;border-color:#ff7070;">🗑 ลบเพลง</button>
+        </div>
+        <div id="bgmusic-status" style="margin-top:10px;font-size:12px;color:var(--gray);">ยังไม่มีเพลง</div>
+      </div>
+
       <!-- ====== CHANGE PASSWORD ====== -->
       <div class="section-title" style="margin-top:2.5rem;">🔑 เปลี่ยนรหัสผ่าน Admin</div>
       <div class="chpw-section">
@@ -2645,14 +2916,61 @@ async function sbFetch(table, method='GET', body=null, query='') {
 
 async function sbLoad() {
   try {
-    const [m, p, a] = await Promise.all([
+    // โหลดข้อมูลทุกตารางพร้อมกัน
+    const [m, p, a, rules, sessions, pollsRes, galleryRes, calRes, dmRes, leaveRes] = await Promise.all([
       sbFetch('members','GET',null,'?order=created_at.asc'),
       sbFetch('pending_members','GET',null,'?order=created_at.asc'),
       sbFetch('announcements','GET',null,'?order=created_at.desc'),
+      sbFetch('gang_rules','GET',null,'?order=created_at.asc'),
+      sbFetch('checkin_sessions','GET',null,'?order=created_at.asc'),
+      sbFetch('polls','GET',null,'?order=created_at.asc'),
+      sbFetch('gallery','GET',null,'?order=created_at.asc'),
+      sbFetch('cal_events','GET',null,'?order=date.asc'),
+      sbFetch('dm_messages','GET',null,'?order=created_at.desc'),
+      sbFetch('leave_requests','GET',null,'?order=created_at.desc'),
     ]);
     if (m) members = m;
     if (p) pendingMembers = p;
     if (a) announcements = a;
+    if (rules) gangRules = rules;
+    if (pollsRes) polls = pollsRes.map(p => ({
+      ...p,
+      options: typeof p.options === 'string' ? JSON.parse(p.options) : p.options
+    }));
+    if (galleryRes) gallery = galleryRes;
+    if (calRes) calEvents = calRes.map(e => ({ ...e, desc: e.description || '' }));
+    if (dmRes) dmMessages = dmRes.map(m => ({ ...m, read: m.is_read }));
+    if (leaveRes) leaveRequests = leaveRes;
+
+    // โหลด bgMusic จาก settings
+    const settingsRes = await sbFetch('settings', 'GET', null, '?id=eq.1');
+    if (settingsRes && settingsRes[0] && settingsRes[0].bgmusic) {
+      bgMusicData = settingsRes[0].bgmusic;
+    }
+
+    // โหลด checkin sessions พร้อม entries
+    if (sessions) {
+      const activeArr = sessions.filter(s => s.is_active);
+      const doneArr = sessions.filter(s => !s.is_active);
+
+      // โหลด checkin_entries สำหรับทุก session
+      const allEntries = await sbFetch('checkin_entries','GET',null,'?order=created_at.asc') || [];
+
+      function attachEntries(sess) {
+        const entries = allEntries.filter(e => String(e.session_id) === String(sess.id));
+        return { ...sess, checkedIn: entries.map(e => ({ ig: e.ig, nick: e.nick, time: e.time })) };
+      }
+
+      checkinSessions = doneArr.map(attachEntries);
+      activeSession = activeArr.length > 0 ? attachEntries(activeArr[activeArr.length-1]) : null;
+
+      // ตรวจสอบ session หมดอายุ
+      if (activeSession && Date.now() > activeSession.ends_at) {
+        await sbFetch('checkin_sessions','PATCH',{ is_active: false },`?id=eq.${activeSession.id}`);
+        checkinSessions.push({ ...activeSession, is_active: false });
+        activeSession = null;
+      }
+    }
   } catch(e) { console.error('sbLoad error:', e); }
 }
 
@@ -2662,34 +2980,28 @@ let adminLoggedIn = sessionStorage.getItem('tz_admin_session') === '1';
 let members = [];
 let pendingMembers = [];
 let announcements = [];
-let leaveRequests = JSON.parse(localStorage.getItem('tz_leave') || '[]');
-let gangRules = JSON.parse(localStorage.getItem('tz_rules') || '[]');
-let checkinSessions = JSON.parse(localStorage.getItem('tz_checkin_sessions') || '[]');
-let activeSession = JSON.parse(localStorage.getItem('tz_active_session') || 'null');
-let polls = JSON.parse(localStorage.getItem('tz_polls') || '[]');
-let gallery = JSON.parse(localStorage.getItem('tz_gallery') || '[]');
-let calEvents = JSON.parse(localStorage.getItem('tz_cal_events') || '[]');
-let dmMessages = JSON.parse(localStorage.getItem('tz_dm') || '[]');
+let bgMusicData = null; // { name, url?, data?, vol }
+let leaveRequests = [];
+let gangRules = [];
+let checkinSessions = [];
+let activeSession = null;
+let polls = [];
+let gallery = [];
+let calEvents = [];
+let dmMessages = [];
 const DEFAULT_WEBHOOK_BIRTHDAY = 'https://discord.com/api/webhooks/1495073922063012060/Xi1SpZkWLzMnVUysy-1rTi9jly76yhAw79E6eng2Xo-JIZxlVB0wtvWZ7chOS9_h4r0b';
 const DEFAULT_WEBHOOK_LEAVE    = 'https://discord.com/api/webhooks/1495071381845708961/XP1oDJkzo18MOA37KuXIXTgSLh6TxqIFyrf0yuyRJiWK-MI0FUn9Lzxwd-TPHUEtQDDI';
 const DEFAULT_WEBHOOK_APPROVE  = 'https://discord.com/api/webhooks/1495077890155352296/W-_6UoNmjxDwFcwlTGme8x3WQgQyUpHyz_KV4QigTdoDO2DCnH1XboI5JxHSJbT61Msj';
 let webhookBirthday = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY;
 let webhookLeave = localStorage.getItem('tz_webhook_leave') || DEFAULT_WEBHOOK_LEAVE;
-let webhookUrl = webhookBirthday; // backwards compat alias
+let webhookUrl = webhookBirthday;
 let lastSeenAnn = parseInt(localStorage.getItem('tz_last_seen_ann') || '0');
 let checkinCountdownTimer = null;
 let calYear, calMonth;
 
+// save() ยังคงไว้สำหรับข้อมูลที่ยังใช้ localStorage (webhook settings, admin pass)
 function save() {
-  // Local-only data (not shared)
-  localStorage.setItem('tz_leave', JSON.stringify(leaveRequests));
-  localStorage.setItem('tz_rules', JSON.stringify(gangRules));
-  localStorage.setItem('tz_checkin_sessions', JSON.stringify(checkinSessions));
-  localStorage.setItem('tz_active_session', JSON.stringify(activeSession));
-  localStorage.setItem('tz_polls', JSON.stringify(polls));
-  localStorage.setItem('tz_gallery', JSON.stringify(gallery));
-  localStorage.setItem('tz_cal_events', JSON.stringify(calEvents));
-  localStorage.setItem('tz_dm', JSON.stringify(dmMessages));
+  localStorage.setItem('tz_last_seen_ann', lastSeenAnn);
 }
 
 // ====== NAVIGATION ======
@@ -2700,7 +3012,7 @@ function showPage(id) {
 
   document.getElementById('page-' + id).classList.add('active');
 
-  const idx = ['home','announce','members','rules','checkin','poll','gallery','calendar','leaderboard','dm','verify','leave','admin'];
+  const idx = ['home','announce','members','rules','checkin','poll','gallery','calendar','leaderboard','dm','verify','changeinfo','leave','admin'];
   const navBtns = document.querySelectorAll('.nav-btn');
   const mobileBtns = document.querySelectorAll('.mobile-btn');
   const i = idx.indexOf(id);
@@ -2730,6 +3042,7 @@ function showPage(id) {
   }
   if (id === 'home') updateHomeStats();
   if (id === 'verify' || id === 'leave') setTimeout(observeReveals, 50);
+  if (id === 'changeinfo') { chaccReset(); setTimeout(observeReveals, 50); }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -2857,23 +3170,19 @@ async function submitLeave() {
   const igFull = ig.startsWith('@') ? ig : '@' + ig;
 
   // ลบสมาชิกออกจากระบบ
-  const before = members.length;
   const toDelMembers = members.filter(m => m.ig.toLowerCase() === igFull.toLowerCase());
   const toDelPending = pendingMembers.filter(m => m.ig.toLowerCase() === igFull.toLowerCase());
   for (const dm of toDelMembers) { await sbFetch('members', 'DELETE', null, `?id=eq.${dm.id}`); }
   for (const dp of toDelPending) { await sbFetch('pending_members', 'DELETE', null, `?id=eq.${dp.id}`); }
   members = members.filter(m => m.ig.toLowerCase() !== igFull.toLowerCase());
-  // ลบ pending ด้วย
   pendingMembers = pendingMembers.filter(m => m.ig.toLowerCase() !== igFull.toLowerCase());
 
-  const req = {
-    id: Date.now(),
-    ig: igFull,
-    nick, gen, reason,
+  // บันทึกคำขอออกใน Supabase
+  const res = await sbFetch('leave_requests', 'POST', {
+    ig: igFull, nick, gen, reason,
     date: new Date().toLocaleDateString('th-TH')
-  };
-  leaveRequests.push(req);
-  save();
+  });
+  if (res && res[0]) leaveRequests.unshift(res[0]);
 
   const wh = localStorage.getItem('tz_webhook_leave') || DEFAULT_WEBHOOK_LEAVE;
   if (wh) {
@@ -3497,7 +3806,8 @@ function renderAdminPanel() {
   if (apl) {
     apl.innerHTML = polls.length === 0 ? '<p style="color:var(--gray);font-size:13px;margin-bottom:12px;">ยังไม่มีโพล</p>'
       : polls.map(p => {
-        const total = p.options.reduce((s,o) => s+o.votes.length, 0);
+        const opts = typeof p.options === 'string' ? JSON.parse(p.options) : p.options;
+        const total = opts.reduce((s,o) => s+o.votes.length, 0);
         return `<div class="post-item" style="margin-bottom:8px;">
           <div><div class="post-item-title">${p.question}</div>
           <div class="post-item-meta">${total} โหวต · ${p.closed?'ปิดแล้ว':'เปิดอยู่'}</div></div>
@@ -3618,22 +3928,27 @@ async function rejectMember(id) {
 }
 
 // ====== RULES ======
-function saveRule() {
+async function saveRule() {
   const title = document.getElementById('rule-title-input').value.trim();
   const body = document.getElementById('rule-body-input').value.trim();
   if (!title || !body) { showToast('กรุณากรอกหัวข้อและรายละเอียดกฎ', 'warn'); return; }
-  gangRules.push({ id: Date.now(), title, body });
-  save();
-  document.getElementById('rule-title-input').value = '';
-  document.getElementById('rule-body-input').value = '';
-  showToast('เพิ่มกฎเรียบร้อย ✓', 'success');
-  renderAdminPanel();
-  renderRules();
+  const res = await sbFetch('gang_rules', 'POST', { title, body });
+  if (res && res[0]) {
+    gangRules.push(res[0]);
+    document.getElementById('rule-title-input').value = '';
+    document.getElementById('rule-body-input').value = '';
+    showToast('เพิ่มกฎเรียบร้อย ✓', 'success');
+    renderAdminPanel();
+    renderRules();
+  } else {
+    showToast('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+  }
 }
 
-function deleteRule(id) {
+async function deleteRule(id) {
+  await sbFetch('gang_rules', 'DELETE', null, `?id=eq.${id}`);
   gangRules = gangRules.filter(r => r.id !== id);
-  save(); renderAdminPanel(); renderRules();
+  renderAdminPanel(); renderRules();
 }
 
 function renderRules() {
@@ -3659,44 +3974,54 @@ function generateCode() {
   return String(Math.floor(1000 + Math.random() * 9000));
 }
 
-function startCheckinSession() {
+async function startCheckinSession() {
   const name = document.getElementById('ci-session-name').value.trim() || 'เช็คชื่อ';
   const mins = parseInt(document.getElementById('ci-duration').value) || 30;
   const code = generateCode();
-  activeSession = {
-    id: Date.now(),
-    name,
-    code,
-    endsAt: Date.now() + mins * 60000,
-    checkedIn: []
-  };
-  save();
-  showToast(`เปิดเซสชัน "${name}" รหัส: ${code} ✓`);
-  if (notifSettings.ci) pushNotif('เปิดเช็คชื่อแล้ว!', `เซสชัน "${name}" รหัส: ${code} — เปิดอีก ${mins} นาที`, '✅');
-  renderAdminPanel();
-  startSessionTimer();
+  const endsAt = Date.now() + mins * 60000;
+
+  // ปิด session เก่าถ้ามี
+  if (activeSession) {
+    await sbFetch('checkin_sessions','PATCH',{ is_active: false },`?id=eq.${activeSession.id}`);
+    checkinSessions.push({ ...activeSession, is_active: false });
+  }
+
+  const res = await sbFetch('checkin_sessions', 'POST', {
+    name, code, ends_at: endsAt, is_active: true,
+    date: new Date().toLocaleDateString('th-TH')
+  });
+  if (res && res[0]) {
+    activeSession = { ...res[0], checkedIn: [] };
+    showToast(`เปิดเซสชัน "${name}" รหัส: ${code} ✓`);
+    if (notifSettings.ci) pushNotif('เปิดเช็คชื่อแล้ว!', `เซสชัน "${name}" รหัส: ${code} — เปิดอีก ${mins} นาที`, '✅');
+    renderAdminPanel();
+    startSessionTimer();
+  } else {
+    showToast('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+  }
 }
 
-function stopCheckinSession() {
+async function stopCheckinSession() {
   if (!activeSession) return;
-  checkinSessions.push({ ...activeSession });
+  await sbFetch('checkin_sessions','PATCH',{ is_active: false },`?id=eq.${activeSession.id}`);
+  checkinSessions.push({ ...activeSession, is_active: false });
   activeSession = null;
-  save();
   clearInterval(checkinCountdownTimer);
   showToast('ปิดเซสชันเช็คชื่อแล้ว', 'info');
   renderAdminPanel();
 }
 
-function deleteCheckinSession(id) {
+async function deleteCheckinSession(id) {
+  await sbFetch('checkin_sessions', 'DELETE', null, `?id=eq.${id}`);
   checkinSessions = checkinSessions.filter(s => s.id !== id);
-  save(); renderAdminPanel();
+  renderAdminPanel();
 }
 
 function startSessionTimer() {
   clearInterval(checkinCountdownTimer);
   checkinCountdownTimer = setInterval(() => {
     if (!activeSession) { clearInterval(checkinCountdownTimer); return; }
-    const remain = activeSession.endsAt - Date.now();
+    const remain = activeSession.ends_at - Date.now();
     if (remain <= 0) {
       stopCheckinSession();
       clearInterval(checkinCountdownTimer);
@@ -3736,10 +4061,9 @@ function renderCheckinPage() {
   const todayList = document.getElementById('checkin-today-list');
 
   // Check if active session expired
-  if (activeSession && Date.now() > activeSession.endsAt) {
-    checkinSessions.push({ ...activeSession });
-    activeSession = null;
-    save();
+  if (activeSession && Date.now() > activeSession.ends_at) {
+    stopCheckinSession(); // จะ update Supabase ด้วย
+    return;
   }
 
   if (activeSession) {
@@ -3784,7 +4108,7 @@ function renderCheckinPage() {
 
 function updateCheckinPublicTimer() {
   if (!activeSession) return;
-  const remain = activeSession.endsAt - Date.now();
+  const remain = activeSession.ends_at - Date.now();
   const timerEl = document.getElementById('checkin-timer');
   const codeEl = document.getElementById('checkin-code-display');
   if (remain <= 0) {
@@ -3798,14 +4122,14 @@ function updateCheckinPublicTimer() {
   if (codeEl) codeEl.textContent = activeSession.code;
 }
 
-function submitCheckin() {
+async function submitCheckin() {
   const igInput = document.getElementById('ci-ig').value.trim();
   const codeInput = document.getElementById('ci-code').value.trim();
   const resultEl = document.getElementById('checkin-result');
 
   if (!igInput || !codeInput) { showToast('กรุณากรอก IG และรหัสให้ครบ', 'warn'); return; }
   if (!activeSession) { showToast('ไม่มีเซสชันเปิดอยู่', 'error'); return; }
-  if (Date.now() > activeSession.endsAt) { showToast('เซสชันหมดเวลาแล้ว', 'error'); return; }
+  if (Date.now() > activeSession.ends_at) { showToast('เซสชันหมดเวลาแล้ว', 'error'); return; }
 
   if (codeInput !== activeSession.code) {
     resultEl.style.display = 'block';
@@ -3824,7 +4148,6 @@ function submitCheckin() {
     return;
   }
 
-  // ตรวจสอบว่าเช็คแล้วหรือยัง
   const alreadyChecked = activeSession.checkedIn.some(c => c.ig.toLowerCase() === igFull.toLowerCase());
   if (alreadyChecked) {
     resultEl.style.display = 'block';
@@ -3834,11 +4157,12 @@ function submitCheckin() {
   }
 
   const now = new Date();
-  activeSession.checkedIn.push({
-    ig: igFull, nick: member.nick,
-    time: now.toLocaleTimeString('th-TH')
-  });
-  save();
+  const timeStr = now.toLocaleTimeString('th-TH');
+  const entry = { ig: igFull, nick: member.nick, time: timeStr };
+
+  // บันทึกลง Supabase
+  await sbFetch('checkin_entries', 'POST', { session_id: activeSession.id, ig: igFull, nick: member.nick, time: timeStr });
+  activeSession.checkedIn.push(entry);
 
   resultEl.style.display = 'block';
   resultEl.className = 'checkin-result success';
@@ -3847,7 +4171,7 @@ function submitCheckin() {
       ${member.avatar ? `<img src="${member.avatar}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #00b450;">` : ''}
       <div>
         <div class="checkin-result-name">✅ ${member.nick}</div>
-        <div class="checkin-result-info">${member.ig} · ${member.gen}<br>เช็คชื่อเวลา ${now.toLocaleTimeString('th-TH')}</div>
+        <div class="checkin-result-info">${member.ig} · ${member.gen}<br>เช็คชื่อเวลา ${timeStr}</div>
       </div>
     </div>
   `;
@@ -3859,46 +4183,74 @@ function submitCheckin() {
 }
 
 // ====== BIRTHDAY SYSTEM ======
-function checkBirthdays() {
+async function checkBirthdays() {
+  // รอให้ members โหลดครบก่อน (กัน race condition กับ Supabase)
+  if (!members || members.length === 0) {
+    console.log('[Birthday] members ยังไม่โหลด รอก่อน...');
+    setTimeout(checkBirthdays, 3000);
+    return;
+  }
+
   const today = new Date();
   const mm = String(today.getMonth()+1).padStart(2,'0');
   const dd = String(today.getDate()).padStart(2,'0');
   const todayMD = `${mm}-${dd}`;
 
-  members.forEach(async m => {
-    if (!m.dob) return;
+  console.log(`[Birthday] ตรวจวันเกิด ${todayMD} จากสมาชิก ${members.length} คน`);
+
+  const wh = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY;
+
+  for (const m of members) {
+    if (!m.dob) continue;
     const parts = m.dob.split('-'); // yyyy-mm-dd
-    if (parts.length < 3) return;
+    if (parts.length < 3) continue;
     const mDOB = `${parts[1]}-${parts[2]}`;
-    if (mDOB === todayMD) {
-      // แสดง birthday overlay
-      showBirthdayOverlay(m);
-      // Push notification วันเกิด
-      if (notifSettings.bday) pushNotif(`🎂 Happy Birthday ${m.nick}!`, `วันนี้เป็นวันเกิดของ ${m.nick} (${m.ig}) ${m.gen} 🎉`, '🎂');
-      // ส่ง Discord
-      const wh = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY;
-      if (wh) {
-        try {
-          await fetch(wh, { method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({
-              content: `@everyone 🎂 วันนี้เป็นวันเกิดของ **${m.nick}** แล้ว!!`,
-              embeds: [{
-                title: `🎂  Happy Birthday, ${m.nick}!`,
-                description: `วันนี้เป็นวันเกิดของ **${m.nick}** แล้ว!! 🥳\nขอให้มีความสุขมากๆ ตลอดปีเลยนะ~ ✨`,
-                color: 0xEB459E,
-                fields: [
-                  { name: 'Instagram', value: (m.ig.startsWith('@') ? m.ig : `@${m.ig}`), inline: true },
-                  { name: 'GEN', value: `${m.gen}`, inline: true }
-                ],
-                thumbnail: m.avatar ? { url: m.avatar } : undefined,
-                footer: { text: 'THEZESTORA BIRTHDAY BOT' },
-                timestamp: new Date().toISOString()
-              }]
-            }) });
-        } catch(e) {}
+    if (mDOB !== todayMD) continue;
+
+    console.log(`[Birthday] 🎂 วันเกิดของ ${m.nick} (${m.ig})`);
+
+    // แสดง birthday overlay
+    showBirthdayOverlay(m);
+    // Push notification วันเกิด
+    if (notifSettings.bday) pushNotif(`🎂 Happy Birthday ${m.nick}!`, `วันนี้เป็นวันเกิดของ ${m.nick} (${m.ig}) ${m.gen} 🎉`, '🎂');
+
+    // ส่ง Discord webhook
+    if (!wh) { console.warn('[Birthday] ไม่มี webhook URL'); continue; }
+
+    // ถ้า avatar เป็น base64 ให้ข้ามเพื่อกัน payload เกิน Discord limit
+    const isBase64Avatar = m.avatar && m.avatar.startsWith('data:');
+    const thumbnailObj = (m.avatar && !isBase64Avatar) ? { url: m.avatar } : undefined;
+
+    try {
+      const res = await fetch(wh, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: `@everyone 🎂 วันนี้เป็นวันเกิดของ **${m.nick}** แล้ว!!`,
+          embeds: [{
+            title: `🎂  Happy Birthday, ${m.nick}!`,
+            description: `วันนี้เป็นวันเกิดของ **${m.nick}** แล้ว!! 🥳\nขอให้มีความสุขมากๆ ตลอดปีเลยนะ~ ✨`,
+            color: 0xEB459E,
+            fields: [
+              { name: 'Instagram', value: (m.ig.startsWith('@') ? m.ig : `@${m.ig}`), inline: true },
+              { name: 'GEN', value: `${m.gen}`, inline: true }
+            ],
+            thumbnail: thumbnailObj,
+            footer: { text: 'THEZESTORA BIRTHDAY BOT' },
+            timestamp: new Date().toISOString()
+          }]
+        })
+      });
+      if (res.ok) {
+        console.log(`[Birthday] ✅ ส่ง Discord สำเร็จสำหรับ ${m.nick}`);
+      } else {
+        const errText = await res.text();
+        console.error(`[Birthday] ❌ Discord ตอบ ${res.status}:`, errText);
       }
+    } catch(e) {
+      console.error('[Birthday] fetch error:', e);
     }
-  });
+  }
 }
 
 function showBirthdayOverlay(m) {
@@ -3936,44 +4288,59 @@ function addPollOption() {
   wrap.appendChild(div);
 }
 
-function createPoll() {
+async function createPoll() {
   const question = document.getElementById('poll-question-input').value.trim();
   const opts = [...document.querySelectorAll('.poll-opt')].map(i => i.value.trim()).filter(v => v);
   const hours = parseInt(document.getElementById('poll-duration').value) || 24;
   if (!question || opts.length < 2) { showToast('กรุณากรอกคำถามและอย่างน้อย 2 ตัวเลือก'); return; }
-  polls.push({
-    id: Date.now(), question, options: opts.map(o => ({ label: o, votes: [], voters: [] })),
-    endsAt: Date.now() + hours * 3600000,
-    date: new Date().toLocaleDateString('th-TH'), closed: false
+
+  const options = opts.map(o => ({ label: o, votes: [] }));
+  const endsAt = Date.now() + hours * 3600000;
+  const res = await sbFetch('polls', 'POST', {
+    question,
+    options: JSON.stringify(options),
+    ends_at: endsAt,
+    date: new Date().toLocaleDateString('th-TH'),
+    closed: false
   });
-  save();
-  document.getElementById('poll-question-input').value = '';
-  document.querySelectorAll('.poll-opt').forEach((el, i) => { if (i >= 2) el.parentNode.remove(); else el.value = ''; });
-  showToast('สร้างโพลเรียบร้อย ✓', 'success');
-  renderAdminPanel();
+  if (res && res[0]) {
+    polls.push({ ...res[0], options: typeof res[0].options === 'string' ? JSON.parse(res[0].options) : res[0].options });
+    document.getElementById('poll-question-input').value = '';
+    document.querySelectorAll('.poll-opt').forEach((el, i) => { if (i >= 2) el.parentNode.remove(); else el.value = ''; });
+    showToast('สร้างโพลเรียบร้อย ✓', 'success');
+    renderAdminPanel();
+  } else {
+    showToast('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+  }
 }
 
-function votePoll(pollId, optIdx) {
+async function votePoll(pollId, optIdx) {
   const poll = polls.find(p => p.id === pollId);
-  if (!poll || poll.closed || Date.now() > poll.endsAt) return;
-  // ป้องกันโหวตซ้ำ (ใช้ localStorage fingerprint)
+  if (!poll || poll.closed) return;
   const voteKey = `tz_voted_${pollId}`;
   if (localStorage.getItem(voteKey)) { showToast('คุณโหวตไปแล้ว', 'warn'); return; }
+
   poll.options[optIdx].votes.push(Date.now());
   localStorage.setItem(voteKey, String(optIdx));
-  save();
+
+  await sbFetch('polls', 'PATCH', { options: JSON.stringify(poll.options) }, `?id=eq.${pollId}`);
   renderPolls();
   showToast('โหวตเรียบร้อย ✓', 'success');
 }
 
-function closePoll(id) {
+async function closePoll(id) {
   const poll = polls.find(p => p.id === id);
-  if (poll) { poll.closed = true; save(); renderAdminPanel(); renderPolls(); }
+  if (poll) {
+    poll.closed = true;
+    await sbFetch('polls', 'PATCH', { closed: true }, `?id=eq.${id}`);
+    renderAdminPanel(); renderPolls();
+  }
 }
 
-function deletePoll(id) {
+async function deletePoll(id) {
+  await sbFetch('polls', 'DELETE', null, `?id=eq.${id}`);
   polls = polls.filter(p => p.id !== id);
-  save(); renderAdminPanel(); renderPolls();
+  renderAdminPanel(); renderPolls();
 }
 
 function renderPolls() {
@@ -3981,8 +4348,8 @@ function renderPolls() {
   const empty = document.getElementById('poll-empty');
   if (!list) return;
 
-  // Auto-close expired polls
-  polls.forEach(p => { if (!p.closed && Date.now() > p.endsAt) p.closed = true; });
+  // Auto-close expired polls (local UI only)
+  polls.forEach(p => { if (!p.closed && p.ends_at && Date.now() > p.ends_at) p.closed = true; });
 
   const activePoll = polls.filter(p => !p.closed);
   const closedPoll = polls.filter(p => p.closed);
@@ -3992,11 +4359,12 @@ function renderPolls() {
   empty.style.display = 'none';
 
   list.innerHTML = allSorted.map(poll => {
-    const total = poll.options.reduce((s, o) => s + o.votes.length, 0);
+    const options = typeof poll.options === 'string' ? JSON.parse(poll.options) : poll.options;
+    const total = options.reduce((s, o) => s + o.votes.length, 0);
     const myVote = localStorage.getItem(`tz_voted_${poll.id}`);
-    const hasVoted = myVote !== null || poll.closed;
-    const isClosed = poll.closed || Date.now() > poll.endsAt;
-    const maxVotes = Math.max(...poll.options.map(o => o.votes.length), 1);
+    const isClosed = poll.closed || (poll.ends_at && Date.now() > poll.ends_at);
+    const hasVoted = myVote !== null || isClosed;
+    const maxVotes = Math.max(...options.map(o => o.votes.length), 1);
 
     return `<div class="poll-card reveal">
       <div class="poll-question">${poll.question}
@@ -4004,7 +4372,7 @@ function renderPolls() {
       </div>
       <div class="poll-meta">${poll.date} · ${total} โหวต</div>
       <div class="poll-options">
-        ${poll.options.map((opt, i) => {
+        ${options.map((opt, i) => {
           const pct = total ? Math.round(opt.votes.length / total * 100) : 0;
           const isWinner = isClosed && opt.votes.length === maxVotes && opt.votes.length > 0;
           const isMyVote = myVote === String(i);
@@ -4045,13 +4413,16 @@ function previewGalleryUpload(input) {
   });
 }
 
-function uploadGallery() {
+async function uploadGallery() {
   const caption = document.getElementById('gallery-caption-input').value.trim();
   if (galleryUploadFiles.length === 0) { showToast('กรุณาเลือกรูปภาพก่อน', 'warn'); return; }
-  galleryUploadFiles.forEach(data => {
-    gallery.push({ id: Date.now() + Math.random(), src: data, caption, date: new Date().toLocaleDateString('th-TH') });
-  });
-  save();
+
+  const dateStr = new Date().toLocaleDateString('th-TH');
+  for (const data of galleryUploadFiles) {
+    const res = await sbFetch('gallery', 'POST', { src: data, caption, date: dateStr });
+    if (res && res[0]) gallery.push(res[0]);
+  }
+
   galleryUploadFiles = [];
   document.getElementById('gallery-caption-input').value = '';
   document.getElementById('gallery-upload-preview').innerHTML = '';
@@ -4060,9 +4431,10 @@ function uploadGallery() {
   renderAdminPanel(); renderGallery();
 }
 
-function deleteGalleryItem(id) {
+async function deleteGalleryItem(id) {
+  await sbFetch('gallery', 'DELETE', null, `?id=eq.${id}`);
   gallery = gallery.filter(g => g.id !== id);
-  save(); renderAdminPanel(); renderGallery();
+  renderAdminPanel(); renderGallery();
 }
 
 function renderGallery() {
@@ -4178,22 +4550,28 @@ function openAddEvent(dateStr) {
   document.getElementById('event-modal').classList.add('show');
 }
 
-function saveEvent() {
+async function saveEvent() {
   const date = document.getElementById('ev-date').value;
   const title = document.getElementById('ev-title').value.trim();
   const desc = document.getElementById('ev-desc').value.trim();
   const type = document.getElementById('ev-type').value;
   if (!date || !title) { showToast('กรุณากรอกวันที่และชื่อกิจกรรม', 'warn'); return; }
-  calEvents.push({ id: Date.now(), date, title, desc, type });
-  save();
-  closeModal('event-modal');
-  renderCalendar();
-  showToast('เพิ่มกิจกรรมเรียบร้อย ✓', 'success');
+
+  const res = await sbFetch('cal_events', 'POST', { date, title, description: desc, type });
+  if (res && res[0]) {
+    calEvents.push({ ...res[0], desc: res[0].description || '' });
+    closeModal('event-modal');
+    renderCalendar();
+    showToast('เพิ่มกิจกรรมเรียบร้อย ✓', 'success');
+  } else {
+    showToast('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+  }
 }
 
-function deleteEvent(id) {
+async function deleteEvent(id) {
+  await sbFetch('cal_events', 'DELETE', null, `?id=eq.${id}`);
   calEvents = calEvents.filter(e => e.id !== id);
-  save(); renderCalendar();
+  renderCalendar();
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
@@ -4299,20 +4677,28 @@ async function sendDM() {
   const sender = dmAnon ? 'ไม่ระบุตัวตน' : (document.getElementById('dm-sender').value.trim() || 'ไม่ระบุ');
   if (!subject || !body) { showToast('กรุณากรอกหัวข้อและข้อความ', 'warn'); return; }
 
-  const msg = { id: Date.now(), sender, subject, body, date: new Date().toLocaleDateString('th-TH'), anon: dmAnon, read: false };
-  dmMessages.push(msg);
-  save();
-  updateDMBadge();
-
-  document.getElementById('dm-subject').value = '';
-  document.getElementById('dm-body').value = '';
-  if (!dmAnon) document.getElementById('dm-sender').value = '';
-  showToast('ส่งข้อความเรียบร้อยแล้ว ✓', 'success');
+  const res = await sbFetch('dm_messages', 'POST', {
+    sender, subject, body,
+    date: new Date().toLocaleDateString('th-TH'),
+    anon: dmAnon,
+    is_read: false
+  });
+  if (res && res[0]) {
+    dmMessages.unshift({ ...res[0], read: false });
+    updateDMBadge();
+    document.getElementById('dm-subject').value = '';
+    document.getElementById('dm-body').value = '';
+    if (!dmAnon) document.getElementById('dm-sender').value = '';
+    showToast('ส่งข้อความเรียบร้อยแล้ว ✓', 'success');
+  } else {
+    showToast('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+  }
 }
 
-function deleteDM(id) {
+async function deleteDM(id) {
+  await sbFetch('dm_messages', 'DELETE', null, `?id=eq.${id}`);
   dmMessages = dmMessages.filter(m => m.id !== id);
-  save(); renderAdminPanel();
+  renderAdminPanel();
 }
 
 // ====== POPUP ======
@@ -4367,17 +4753,20 @@ function exportFullBackup() {
   const date = new Date().toLocaleDateString('th-TH').replace(/\//g,'-');
   const backup = {
     exportedAt: new Date().toISOString(),
-    version: 'v8',
+    version: 'v9-supabase',
     members: members.map(({ avatar, ...rest }) => rest),
     pendingMembers: pendingMembers.map(({ avatar, ...rest }) => rest),
     announcements,
     leaveRequests,
     gangRules,
     checkinSessions: checkinSessions.map(s => ({
-      ...s,
-      checkedIn: s.checkedIn
+      id: s.id, name: s.name, date: s.date,
+      checkedIn: s.checkedIn || []
     })),
-    polls: polls.map(p => ({ ...p, options: p.options.map(o => ({ label: o.label, votes: o.votes.length })) })),
+    polls: polls.map(p => {
+      const opts = typeof p.options === 'string' ? JSON.parse(p.options) : p.options;
+      return { ...p, options: opts.map(o => ({ label: o.label, votes: o.votes.length })) };
+    }),
     calEvents,
     dmMessages: dmMessages.map(m => ({ ...m, body: '[redacted]' })) // privacy
   };
@@ -4565,6 +4954,8 @@ function showToast(msg, type = 'info') {
     }, 500);
     // Play embedded welcome audio
     setTimeout(speakWelcome, 300);
+    // Auto-play background music if set
+    setTimeout(() => { if (bgMusicData) startBgMusic(); }, 1200);
   }
 
   if (splash) {
@@ -4572,6 +4963,308 @@ function showToast(msg, type = 'info') {
     splash.addEventListener('touchend', function(e) { e.preventDefault(); enterSite(); }, { passive: false });
   }
 })();
+
+// ====== CHANGE ACCOUNT / NICK / AVATAR — 3-STEP FLOW ======
+let chaccTargetMember = null;
+let chaccNewAvatarData = null;
+
+function chaccSetStep(step) {
+  [1,2,3].forEach(n => {
+    document.getElementById(`cistep-${n}`).classList.remove('active','done');
+    document.getElementById(`ci-panel-${n}`).style.display = 'none';
+  });
+  // mark done steps
+  for (let i = 1; i < step; i++) document.getElementById(`cistep-${i}`).classList.add('done');
+  // mark step lines
+  document.querySelectorAll('.ci-step-line').forEach((l,i) => {
+    l.classList.toggle('done', i < step - 1);
+  });
+  document.getElementById(`cistep-${step}`).classList.add('active');
+  document.getElementById(`ci-panel-${step}`).style.display = 'block';
+}
+
+function chaccReset() {
+  chaccTargetMember = null;
+  chaccNewAvatarData = null;
+  document.getElementById('chacc-search-ig').value = '';
+  document.getElementById('chacc-verify-dob').value = '';
+  document.getElementById('chacc-new-ig').value = '';
+  document.getElementById('chacc-new-nick').value = '';
+  document.getElementById('chacc-new-avatar-input').value = '';
+  document.getElementById('chacc-new-avatar-preview').innerHTML = '🖼️';
+  document.getElementById('chacc-new-avatar-preview').classList.remove('has-image');
+  document.getElementById('chacc-clear-avatar').style.display = 'none';
+  chaccSetStep(1);
+}
+
+async function chaccLookup() {
+  const igRaw = document.getElementById('chacc-search-ig').value.trim();
+  if (!igRaw) { showToast('กรุณาใส่ Instagram ก่อน', 'warn'); return; }
+  const igFull = igRaw.startsWith('@') ? igRaw : '@' + igRaw;
+  const found = members.find(m => m.ig.toLowerCase() === igFull.toLowerCase());
+  if (!found) {
+    showToast(`ไม่พบ ${igFull} ในระบบสมาชิก`, 'error'); return;
+  }
+  chaccTargetMember = found;
+
+  // แสดงโปรไฟล์ใน step 2
+  const avatarEl = document.getElementById('chacc-avatar');
+  if (found.avatar) {
+    avatarEl.innerHTML = `<img src="${found.avatar}" style="width:100%;height:100%;object-fit:cover;">`;
+  } else {
+    avatarEl.textContent = found.nick.charAt(0).toUpperCase();
+  }
+  document.getElementById('chacc-result-name').textContent = found.nick;
+  document.getElementById('chacc-result-meta').textContent = `${found.ig} · ${found.gen}`;
+  document.getElementById('chacc-verify-dob').value = '';
+
+  chaccSetStep(2);
+}
+
+function chaccVerify() {
+  if (!chaccTargetMember) return;
+  const input = document.getElementById('chacc-verify-dob').value.trim();
+  if (!input) { showToast('กรุณาใส่วันเกิด', 'warn'); return; }
+  if (input.length !== 6) { showToast('กรุณาใส่ให้ครบ 6 หลัก (เช่น 172551)', 'warn'); return; }
+
+  // input = "DD + YYYY (พ.ศ.)" เช่น "172551" = วันที่ 17 ปี 2551
+  const dd     = input.slice(0, 2);
+  const yyyyBE = parseInt(input.slice(2, 6));
+  const yyyyCE = String(yyyyBE - 543).padStart(4, '0');
+
+  // dob ใน DB คือ "YYYY-MM-DD" (ค.ศ.) — เราเทียบแค่วัน + ปี
+  const dob = chaccTargetMember.dob || '';
+  const dobParts = dob.split('-'); // [yyyy, mm, dd]
+  const dobDD   = dobParts[2] || '';
+  const dobYYYY = dobParts[0] || '';
+
+  if (dd !== dobDD || yyyyCE !== dobYYYY) {
+    showToast('วันเกิดไม่ถูกต้อง กรุณาลองใหม่', 'error');
+    document.getElementById('chacc-verify-dob').value = '';
+    return;
+  }
+
+  // ผ่านการยืนยัน → step 3
+  const m = chaccTargetMember;
+  const bigAvatar = document.getElementById('chacc-big-avatar');
+  if (m.avatar) {
+    bigAvatar.innerHTML = `<img src="${m.avatar}" style="width:100%;height:100%;object-fit:cover;">`;
+  } else {
+    bigAvatar.textContent = m.nick.charAt(0).toUpperCase();
+  }
+  document.getElementById('chacc-big-name').textContent = m.nick;
+  document.getElementById('chacc-big-ig').textContent = m.ig;
+  document.getElementById('chacc-big-gen').textContent = m.gen;
+
+  // reset ฟอร์ม step 3
+  chaccNewAvatarData = null;
+  document.getElementById('chacc-new-ig').value = '';
+  document.getElementById('chacc-new-nick').value = '';
+  document.getElementById('chacc-new-avatar-input').value = '';
+  document.getElementById('chacc-new-avatar-preview').innerHTML = '🖼️';
+  document.getElementById('chacc-new-avatar-preview').classList.remove('has-image');
+  document.getElementById('chacc-clear-avatar').style.display = 'none';
+
+  chaccSetStep(3);
+  showToast(`ยืนยันตัวตนสำเร็จ ✓`, 'success');
+}
+
+function chaccPreviewAvatar(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('รูปใหญ่เกิน 5MB', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    chaccNewAvatarData = e.target.result;
+    const prev = document.getElementById('chacc-new-avatar-preview');
+    prev.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    prev.classList.add('has-image');
+    document.getElementById('chacc-clear-avatar').style.display = 'inline-block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function chaccClearAvatar() {
+  chaccNewAvatarData = null;
+  document.getElementById('chacc-new-avatar-input').value = '';
+  document.getElementById('chacc-new-avatar-preview').innerHTML = '🖼️';
+  document.getElementById('chacc-new-avatar-preview').classList.remove('has-image');
+  document.getElementById('chacc-clear-avatar').style.display = 'none';
+}
+
+async function chaccSave() {
+  if (!chaccTargetMember) { showToast('กรุณาค้นหาสมาชิกก่อน', 'warn'); return; }
+
+  const newIgRaw = document.getElementById('chacc-new-ig').value.trim();
+  const newNick  = document.getElementById('chacc-new-nick').value.trim();
+  const newIg    = newIgRaw ? (newIgRaw.startsWith('@') ? newIgRaw : '@' + newIgRaw) : '';
+
+  if (!newIg && !newNick && !chaccNewAvatarData) {
+    showToast('กรุณากรอกอย่างน้อย 1 ช่อง (IG / ชื่อ / รูป)', 'warn'); return;
+  }
+
+  // ตรวจ IG ใหม่ซ้ำ
+  if (newIg && newIg.toLowerCase() !== chaccTargetMember.ig.toLowerCase()) {
+    const duplicate = members.find(m => m.ig.toLowerCase() === newIg.toLowerCase());
+    if (duplicate) { showToast(`${newIg} มีสมาชิกใช้อยู่แล้ว`, 'error'); return; }
+  }
+
+  const payload = {};
+  if (newIg)              payload.ig     = newIg;
+  if (newNick)            payload.nick   = newNick;
+  if (chaccNewAvatarData) payload.avatar = chaccNewAvatarData;
+
+  const btn = document.querySelector('#ci-panel-3 .btn-submit');
+  if (btn) { btn.classList.add('loading'); btn.textContent = 'กำลังบันทึก...'; }
+
+  const ok = await sbFetch('members', 'PATCH', payload, `?id=eq.${chaccTargetMember.id}`);
+
+  if (btn) { btn.classList.remove('loading'); btn.textContent = '💾 บันทึกการเปลี่ยนแปลง'; }
+  if (!ok) { showToast('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error'); return; }
+
+  // อัปเดต local state
+  const idx = members.findIndex(m => m.id === chaccTargetMember.id);
+  if (idx !== -1) {
+    if (newIg)              members[idx].ig     = newIg;
+    if (newNick)            members[idx].nick   = newNick;
+    if (chaccNewAvatarData) members[idx].avatar = chaccNewAvatarData;
+  }
+
+  const changedList = [
+    newIg              ? `IG → ${newIg}`    : '',
+    newNick            ? `ชื่อ → ${newNick}` : '',
+    chaccNewAvatarData ? 'รูปโปรไฟล์'        : ''
+  ].filter(Boolean).join(', ');
+
+  showToast(`บันทึกเรียบร้อย ✓ (${changedList})`, 'success');
+  renderMembers();
+  setTimeout(() => chaccReset(), 800);
+}
+
+// ====== BG MUSIC ======
+let _bgAudio = null;
+let _bgMusicURL = null;
+
+function startBgMusic(url) {
+  const src = url || (bgMusicData && (bgMusicData.data || bgMusicData.url)) || _bgMusicURL;
+  if (!src) return;
+  try {
+    if (_bgAudio) { _bgAudio.pause(); _bgAudio = null; }
+    _bgAudio = new Audio(src);
+    _bgAudio.loop = true;
+    _bgAudio.volume = (bgMusicData && bgMusicData.vol) || 0.3;
+    _bgAudio.play().catch(e => console.warn('bgmusic:', e));
+  } catch(e) {}
+}
+
+function stopBgMusic() {
+  if (_bgAudio) { _bgAudio.pause(); _bgAudio = null; }
+}
+
+function bgTab(t) {
+  document.getElementById('bgpanel-file').style.display = t === 'file' ? 'block' : 'none';
+  document.getElementById('bgpanel-url').style.display = t === 'url' ? 'block' : 'none';
+  const bf = document.getElementById('bgtab-file'), bu = document.getElementById('bgtab-url');
+  bf.style.background = t === 'file' ? 'var(--red)' : 'transparent';
+  bf.style.color = t === 'file' ? '#fff' : 'var(--gray)';
+  bu.style.background = t === 'url' ? 'var(--red)' : 'transparent';
+  bu.style.color = t === 'url' ? '#fff' : 'var(--gray)';
+}
+
+function previewBgURL() {
+  const st = document.getElementById('bgmusic-status');
+  if (st) st.innerHTML = '<span style="color:var(--gray);">กด "บันทึก URL" เพื่อใช้งาน</span>';
+}
+
+function fixDriveURL(url) {
+  if (url.includes('dropbox.com')) {
+    let u = url.replace(/[&?]st=[^&?]*/g, '').replace(/[?&]dl=[01]/g, '');
+    return u + (u.includes('?') ? '&' : '?') + 'dl=1';
+  }
+  const m1 = url.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
+  if (m1) return 'https://drive.google.com/uc?export=download&id=' + m1[1];
+  const m2 = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  if (m2) return 'https://drive.google.com/uc?export=download&id=' + m2[1];
+  return url;
+}
+
+async function saveBgURL() {
+  const raw = (document.getElementById('bgmusic-url') || {}).value || '';
+  if (!raw.trim()) { showToast('กรุณาใส่ URL ก่อนครับ'); return; }
+  const url = fixDriveURL(raw.trim());
+  const vol = parseFloat(document.getElementById('bgmusic-vol').value) || 0.3;
+  bgMusicData = { name: raw.trim(), url: url, vol: vol };
+  await sbFetch('settings', 'PATCH', { bgmusic: bgMusicData }, '?id=eq.1');
+  const st = document.getElementById('bgmusic-status');
+  if (st) st.innerHTML = `<span style="color:var(--red-light);">✓ บันทึก URL แล้ว — กด ▶ ทดสอบเล่น เพื่อตรวจสอบ</span>`;
+  showToast('🎵 บันทึกแล้ว — เพลงพร้อมเล่นสำหรับทุกคน');
+  startBgMusic(url);
+}
+
+function testBgMusic() {
+  const src = (bgMusicData && (bgMusicData.data || bgMusicData.url)) || _bgMusicURL;
+  if (!src) { showToast('ยังไม่มีเพลง — บันทึก URL หรืออัปโหลดไฟล์ก่อนครับ'); return; }
+  startBgMusic(src);
+  showToast('▶ กำลังเล่นเพลงพื้นหลัง');
+}
+
+function saveBgMusic(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const st = document.getElementById('bgmusic-status');
+  if (st) st.innerHTML = '<span style="color:var(--gray);">⏳ กำลังบันทึก...</span>';
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    const b64 = e.target.result;
+    const vol = parseFloat(document.getElementById('bgmusic-vol').value) || 0.3;
+    bgMusicData = { name: file.name, vol: vol, data: b64 };
+    try {
+      await sbFetch('settings', 'PATCH', { bgmusic: bgMusicData }, '?id=eq.1');
+      if (st) st.innerHTML = `<span style="color:var(--red-light);">✓ ${file.name}</span>`;
+      showToast('🎵 บันทึกแล้ว — ทุกคนที่เปิดเว็บจะได้ยินเพลงด้วย');
+      startBgMusic(b64);
+    } catch(err) {
+      // ไฟล์ใหญ่เกิน — เล่นเฉพาะ session นี้
+      bgMusicData = { name: file.name, vol: vol };
+      if (_bgMusicURL) URL.revokeObjectURL(_bgMusicURL);
+      _bgMusicURL = URL.createObjectURL(file);
+      if (st) st.innerHTML = '<span style="color:#e8a030;">⚠ ไฟล์ใหญ่เกินไป — บันทึกได้เฉพาะ session นี้</span>';
+      showToast('⚠ ไฟล์ใหญ่เกินไป — ลองใช้ URL แทนครับ');
+      startBgMusic(_bgMusicURL);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function removeBgMusic() {
+  stopBgMusic();
+  bgMusicData = null;
+  await sbFetch('settings', 'PATCH', { bgmusic: null }, '?id=eq.1');
+  const st = document.getElementById('bgmusic-status');
+  if (st) st.innerHTML = '<span style="color:var(--gray);">ยังไม่มีเพลง</span>';
+  showToast('ลบเพลงพื้นหลังแล้ว');
+}
+
+function setBgVol() {
+  const vol = parseFloat(document.getElementById('bgmusic-vol').value) || 0.3;
+  if (_bgAudio) _bgAudio.volume = vol;
+  if (bgMusicData) {
+    bgMusicData.vol = vol;
+    sbFetch('settings', 'PATCH', { bgmusic: bgMusicData }, '?id=eq.1');
+  }
+}
+
+function syncBgMusicUI() {
+  const st = document.getElementById('bgmusic-status');
+  const bv = document.getElementById('bgmusic-vol');
+  if (!bgMusicData) {
+    if (st) st.innerHTML = '<span style="color:var(--gray);">ยังไม่มีเพลง</span>';
+    return;
+  }
+  if (bv && bgMusicData.vol) bv.value = bgMusicData.vol;
+  const displayName = bgMusicData.name || bgMusicData.url || 'เพลงพื้นหลัง';
+  if (st) st.innerHTML = `<span style="color:var(--red-light);">✓ ${displayName}</span>`;
+}
 
 // ====== INIT ======
 async function initApp() {
@@ -4584,13 +5277,10 @@ async function initApp() {
   renderMembers();
   renderAnnouncements();
   observeReveals();
+  syncBgMusicUI(); // อัปเดต UI เพลงพื้นหลัง
 
-  // Check active session expiry
-  if (activeSession && Date.now() > activeSession.endsAt) {
-    checkinSessions.push({ ...activeSession });
-    activeSession = null;
-    save();
-  } else if (activeSession) {
+  // Check active session expiry (sbLoad already handles this, but double-check)
+  if (activeSession) {
     startSessionTimer();
   }
 
@@ -4599,7 +5289,8 @@ async function initApp() {
   const todayStr = new Date().toDateString();
   if (lastBdayCheck !== todayStr) {
     localStorage.setItem('tz_bday_check', todayStr);
-    setTimeout(checkBirthdays, 2000);
+    // รอ 5 วิเพื่อให้ Supabase โหลด members ครบก่อน
+    setTimeout(checkBirthdays, 5000);
   }
 }
 
@@ -4613,7 +5304,10 @@ window.addEventListener('load', () => {
     setTimeout(() => {
       const ldr = document.getElementById('page-loader');
       if (ldr) ldr.classList.add('hidden');
-      initApp();
+      initApp().then(() => {
+        // Auto-play bg music after init
+        setTimeout(() => { if (bgMusicData) startBgMusic(); }, 500);
+      });
     }, 1400);
   }
 });
