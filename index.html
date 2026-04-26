@@ -4941,6 +4941,13 @@ function showToast(msg, type = 'info') {
 
   function enterSite() {
     if (!splash) return;
+    // *** Unlock audio IMMEDIATELY inside the user gesture (required for iOS/Android) ***
+    _unlockAudioContext();
+    // Start bg music right away while still inside user gesture context
+    if (bgMusicData) startBgMusic();
+    // Also play welcome audio immediately (iOS requires play() in gesture)
+    speakWelcome();
+
     splash.style.transition = 'opacity 0.5s';
     splash.style.opacity = '0';
     setTimeout(() => {
@@ -4952,10 +4959,6 @@ function showToast(msg, type = 'info') {
         if (ldr) ldr.classList.add('hidden');
       }, 1400);
     }, 500);
-    // Play embedded welcome audio
-    setTimeout(speakWelcome, 300);
-    // Auto-play background music if set
-    setTimeout(() => { if (bgMusicData) startBgMusic(); }, 1200);
   }
 
   if (splash) {
@@ -5145,6 +5148,21 @@ async function chaccSave() {
 let _bgAudio = null;
 let _bgMusicURL = null;
 
+// Unlock AudioContext for iOS/Android — must be called inside a user gesture
+function _unlockAudioContext() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const buf = ctx.createBuffer(1, 1, 22050);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start(0);
+    if (ctx.state === 'suspended') ctx.resume();
+  } catch(e) {}
+}
+
 function startBgMusic(url) {
   const src = url || (bgMusicData && (bgMusicData.data || bgMusicData.url)) || _bgMusicURL;
   if (!src) return;
@@ -5153,7 +5171,17 @@ function startBgMusic(url) {
     _bgAudio = new Audio(src);
     _bgAudio.loop = true;
     _bgAudio.volume = (bgMusicData && bgMusicData.vol) || 0.3;
-    _bgAudio.play().catch(e => console.warn('bgmusic:', e));
+    // Set playsinline for iOS
+    _bgAudio.setAttribute('playsinline', '');
+    _bgAudio.setAttribute('webkit-playsinline', '');
+    const playPromise = _bgAudio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(e => {
+        console.warn('bgmusic autoplay blocked:', e);
+        // Retry once after a short delay (helps on some Android browsers)
+        setTimeout(() => { if (_bgAudio) _bgAudio.play().catch(() => {}); }, 300);
+      });
+    }
   } catch(e) {}
 }
 
