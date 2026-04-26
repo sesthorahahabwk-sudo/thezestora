@@ -4941,13 +4941,6 @@ function showToast(msg, type = 'info') {
 
   function enterSite() {
     if (!splash) return;
-    // *** Unlock audio IMMEDIATELY inside the user gesture (required for iOS/Android) ***
-    _unlockAudioContext();
-    // Start bg music right away while still inside user gesture context
-    if (bgMusicData) startBgMusic();
-    // Also play welcome audio immediately (iOS requires play() in gesture)
-    speakWelcome();
-
     splash.style.transition = 'opacity 0.5s';
     splash.style.opacity = '0';
     setTimeout(() => {
@@ -4959,6 +4952,15 @@ function showToast(msg, type = 'info') {
         if (ldr) ldr.classList.add('hidden');
       }, 1400);
     }, 500);
+    // Play embedded welcome audio
+    setTimeout(speakWelcome, 300);
+    // Auto-play background music — รอ bgMusicData โหลดจาก Supabase ก่อน (initApp รันคู่กัน)
+    // ลอง 3 ครั้ง: 1.2s, 2.5s, 4s กัน bgMusicData ยังไม่มาตอนกด
+    function tryPlayBg(attemptsLeft) {
+      if (bgMusicData) { startBgMusic(); return; }
+      if (attemptsLeft > 0) setTimeout(() => tryPlayBg(attemptsLeft - 1), 1300);
+    }
+    setTimeout(() => tryPlayBg(3), 1200);
   }
 
   if (splash) {
@@ -5147,21 +5149,30 @@ async function chaccSave() {
 // ====== BG MUSIC ======
 let _bgAudio = null;
 let _bgMusicURL = null;
+let _bgMusicPending = false; // รอ user touch บน mobile
 
-// Unlock AudioContext for iOS/Android — must be called inside a user gesture
-function _unlockAudioContext() {
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const buf = ctx.createBuffer(1, 1, 22050);
-    const src = ctx.createBufferSource();
-    src.buffer = buf;
-    src.connect(ctx.destination);
-    src.start(0);
-    if (ctx.state === 'suspended') ctx.resume();
-  } catch(e) {}
+function _tryPlayAudio(audio) {
+  if (!audio) return;
+  const p = audio.play();
+  if (p && typeof p.then === 'function') {
+    p.catch(() => {
+      // autoplay blocked — รอ user touch แล้วค่อยเล่น
+      _bgMusicPending = true;
+    });
+  }
 }
+
+// ปลดล็อค audio บน iOS/Android หลัง user touch ครั้งแรก
+function _unlockAudioOnTouch() {
+  if (_bgMusicPending && _bgAudio) {
+    _bgAudio.play().catch(() => {});
+    _bgMusicPending = false;
+  }
+  document.removeEventListener('touchstart', _unlockAudioOnTouch);
+  document.removeEventListener('click', _unlockAudioOnTouch);
+}
+document.addEventListener('touchstart', _unlockAudioOnTouch, { once: true, passive: true });
+document.addEventListener('click', _unlockAudioOnTouch, { once: true });
 
 function startBgMusic(url) {
   const src = url || (bgMusicData && (bgMusicData.data || bgMusicData.url)) || _bgMusicURL;
@@ -5171,17 +5182,11 @@ function startBgMusic(url) {
     _bgAudio = new Audio(src);
     _bgAudio.loop = true;
     _bgAudio.volume = (bgMusicData && bgMusicData.vol) || 0.3;
-    // Set playsinline for iOS
-    _bgAudio.setAttribute('playsinline', '');
-    _bgAudio.setAttribute('webkit-playsinline', '');
-    const playPromise = _bgAudio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(e => {
-        console.warn('bgmusic autoplay blocked:', e);
-        // Retry once after a short delay (helps on some Android browsers)
-        setTimeout(() => { if (_bgAudio) _bgAudio.play().catch(() => {}); }, 300);
-      });
-    }
+    _bgMusicPending = false;
+    _tryPlayAudio(_bgAudio);
+    // Re-register unlock listener ทุกครั้งที่สร้าง audio ใหม่
+    document.addEventListener('touchstart', _unlockAudioOnTouch, { once: true, passive: true });
+    document.addEventListener('click', _unlockAudioOnTouch, { once: true });
   } catch(e) {}
 }
 
@@ -5292,6 +5297,12 @@ function syncBgMusicUI() {
   if (bv && bgMusicData.vol) bv.value = bgMusicData.vol;
   const displayName = bgMusicData.name || bgMusicData.url || 'เพลงพื้นหลัง';
   if (st) st.innerHTML = `<span style="color:var(--red-light);">✓ ${displayName}</span>`;
+  // ถ้ามี URL ให้แสดง tab URL และ populate input
+  if (bgMusicData.url && !bgMusicData.data) {
+    bgTab('url');
+    const urlInput = document.getElementById('bgmusic-url');
+    if (urlInput) urlInput.value = bgMusicData.name || bgMusicData.url;
+  }
 }
 
 // ====== INIT ======
