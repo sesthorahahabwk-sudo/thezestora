@@ -1078,46 +1078,93 @@ input[type="file"] { display: none; }
 /* ====== BIRTHDAY OVERLAY ====== */
 .birthday-overlay {
   display: none; position: fixed; inset: 0; z-index: 5000;
-  background: rgba(0,0,0,0.95); backdrop-filter: blur(12px);
+  background: radial-gradient(ellipse at center, rgba(10,30,15,0.97) 0%, rgba(0,0,0,0.98) 100%);
+  backdrop-filter: blur(20px);
   align-items: center; justify-content: center; flex-direction: column;
 }
 .birthday-overlay.show { display: flex; }
 .birthday-confetti-wrap { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .bday-box {
   text-align: center; position: relative; z-index: 2;
+  padding: 48px 48px 40px;
+  background: linear-gradient(160deg, rgba(14,40,20,0.85) 0%, rgba(5,12,8,0.9) 100%);
+  border: 1px solid rgba(30,122,60,0.25);
+  box-shadow: 0 0 80px rgba(30,122,60,0.12), 0 40px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(168,230,190,0.08);
+  max-width: 440px; width: 90%;
   animation: bdayIn 0.8s cubic-bezier(0.34,1.56,0.64,1);
 }
-@keyframes bdayIn { from{transform:scale(0.5) rotate(-5deg);opacity:0;} to{transform:scale(1) rotate(0);opacity:1;} }
+.bday-box::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, #1E7A3C, #A8E6BE, #1E7A3C, transparent);
+  animation: shimmerLine 3s linear infinite;
+}
+@keyframes shimmerLine {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes bdayIn { from{transform:scale(0.6) translateY(30px);opacity:0;} to{transform:scale(1) translateY(0);opacity:1;} }
 .bday-avatar {
-  width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--red);
-  box-shadow: 0 0 40px rgba(30,122,60,0.28), 0 0 80px rgba(30,122,60,0.15);
-  object-fit: cover; margin-bottom: 20px;
+  width: 110px; height: 110px; border-radius: 50%;
+  border: 3px solid transparent;
+  background: linear-gradient(#0a1e0f,#0a1e0f) padding-box,
+              linear-gradient(135deg,#0D4A20,#A8E6BE,#0D4A20) border-box;
+  box-shadow: 0 0 30px rgba(30,122,60,0.35), 0 0 60px rgba(30,122,60,0.1);
+  object-fit: cover; margin-bottom: 24px;
   animation: bdayFloat 3s ease-in-out infinite;
 }
 .bday-avatar-placeholder {
-  width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--red);
-  box-shadow: 0 0 40px rgba(30,122,60,0.28); background: var(--black3);
+  width: 110px; height: 110px; border-radius: 50%;
+  border: 3px solid transparent;
+  background: linear-gradient(#0a1e0f,#0a1e0f) padding-box,
+              linear-gradient(135deg,#0D4A20,#A8E6BE,#0D4A20) border-box;
+  box-shadow: 0 0 30px rgba(30,122,60,0.35);
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: var(--red);
-  margin: 0 auto 20px; animation: bdayFloat 3s ease-in-out infinite;
+  font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: #A8E6BE;
+  margin: 0 auto 24px; animation: bdayFloat 3s ease-in-out infinite;
 }
-@keyframes bdayFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-12px);} }
+@keyframes bdayFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+.bday-label {
+  font-size: 10px; letter-spacing: 6px; text-transform: uppercase;
+  color: rgba(168,230,190,0.6); margin-bottom: 10px; font-weight: 600;
+}
 .bday-text {
-  font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px,8vw,72px);
-  letter-spacing: 4px; color: var(--white); line-height: 1;
-  text-shadow: 0 0 30px rgba(30,122,60,0.28);
-}
-.bday-text span {
-  background: linear-gradient(135deg, #0D4A20, #1E7A3C, #A8E6BE, #1E7A3C);
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(38px,8vw,68px);
+  letter-spacing: 6px; line-height: 0.95;
+  background: linear-gradient(135deg, #ffffff 0%, #A8E6BE 40%, #1E7A3C 70%, #A8E6BE 100%);
   background-size: 200% auto;
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: goldShimmer 2s linear infinite;
+  animation: goldShimmer 3s linear infinite;
+  filter: drop-shadow(0 0 20px rgba(168,230,190,0.25));
 }
-.bday-name { font-size: 22px; color: var(--white2); margin-top: 12px; letter-spacing: 2px; }
-.bday-ig { font-size: 15px; color: var(--gray); margin-top: 6px; }
-.bday-emoji { font-size: 48px; margin-top: 16px; animation: emojiSpin 2s ease-in-out infinite; }
-@keyframes emojiSpin { 0%,100%{transform:rotate(-10deg) scale(1);} 50%{transform:rotate(10deg) scale(1.2);} }
+.bday-text span {
+  background: inherit; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.bday-divider {
+  width: 60px; height: 1px; margin: 18px auto 16px;
+  background: linear-gradient(90deg, transparent, rgba(168,230,190,0.5), transparent);
+}
+.bday-name { font-size: 20px; font-weight: 700; color: #ffffff; letter-spacing: 3px; text-transform: uppercase; }
+.bday-ig { font-size: 13px; color: rgba(168,230,190,0.55); margin-top: 6px; letter-spacing: 1px; }
+.bday-emoji { font-size: 36px; margin-top: 20px; animation: emojiSpin 2s ease-in-out infinite; }
+@keyframes emojiSpin { 0%,100%{transform:rotate(-8deg) scale(1);} 50%{transform:rotate(8deg) scale(1.15);} }
+.bday-close-btn {
+  margin-top: 28px;
+  background: transparent;
+  border: 1px solid rgba(30,122,60,0.4);
+  color: rgba(168,230,190,0.8);
+  font-family: 'Sarabun', sans-serif;
+  font-size: 13px; font-weight: 600;
+  padding: 10px 32px; letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.bday-close-btn:hover {
+  background: rgba(30,122,60,0.15);
+  border-color: rgba(168,230,190,0.5);
+  color: #ffffff;
+}
 
 /* ====== PENDING APPROVAL ====== */
 .pending-item {
@@ -2708,11 +2755,13 @@ input[type="file"] { display: none; }
   <div class="birthday-confetti-wrap" id="bday-confetti"></div>
   <div class="bday-box">
     <div id="bday-avatar-wrap"></div>
+    <div class="bday-label">✦ TODAY IS SPECIAL ✦</div>
     <div class="bday-text">HAPPY <span>BIRTH</span>DAY</div>
+    <div class="bday-divider"></div>
     <div class="bday-name" id="bday-name"></div>
     <div class="bday-ig" id="bday-ig"></div>
     <div class="bday-emoji">🎂</div>
-    <button class="btn-close-popup" onclick="closeBirthday()" style="margin-top:28px;">ขอบคุณ! 🙏</button>
+    <button class="bday-close-btn" onclick="closeBirthday()">ขอบคุณ 🙏</button>
   </div>
 </div>
 
@@ -2989,7 +3038,7 @@ let polls = [];
 let gallery = [];
 let calEvents = [];
 let dmMessages = [];
-const DEFAULT_WEBHOOK_BIRTHDAY = 'https://discord.com/api/webhooks/1495073922063012060/Xi1SpZkWLzMnVUysy-1rTi9jly76yhAw79E6eng2Xo-JIZxlVB0wtvWZ7chOS9_h4r0b';
+const DEFAULT_WEBHOOK_BIRTHDAY = 'https://discord.com/api/webhooks/1498317302867693758/kfsBVaEBL_PRKKeMABCwV0iBDGbTSWoM-XZajHpieW9A6ABCW6s4d3e9Xz1B6VtuxbJj';
 const DEFAULT_WEBHOOK_LEAVE    = 'https://discord.com/api/webhooks/1495071381845708961/XP1oDJkzo18MOA37KuXIXTgSLh6TxqIFyrf0yuyRJiWK-MI0FUn9Lzxwd-TPHUEtQDDI';
 const DEFAULT_WEBHOOK_APPROVE  = 'https://discord.com/api/webhooks/1495077890155352296/W-_6UoNmjxDwFcwlTGme8x3WQgQyUpHyz_KV4QigTdoDO2DCnH1XboI5JxHSJbT61Msj';
 let webhookBirthday = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY;
@@ -4214,35 +4263,79 @@ async function checkBirthdays() {
     // Push notification วันเกิด
     if (notifSettings.bday) pushNotif(`🎂 Happy Birthday ${m.nick}!`, `วันนี้เป็นวันเกิดของ ${m.nick} (${m.ig}) ${m.gen} 🎉`, '🎂');
 
-    // ส่ง Discord webhook
+    // ส่ง Discord webhook — ส่งแค่ครั้งเดียวต่อวันต่อคน
     if (!wh) { console.warn('[Birthday] ไม่มี webhook URL'); continue; }
+
+    const webhookSentKey = `tz_bday_webhook_${todayMD}_${m.id || m.ig}`;
+    if (localStorage.getItem(webhookSentKey)) {
+      console.log(`[Birthday] ✅ ส่ง Discord ไปแล้วสำหรับ ${m.nick} วันนี้ ข้าม`);
+      continue;
+    }
 
     // ถ้า avatar เป็น base64 ให้ข้ามเพื่อกัน payload เกิน Discord limit
     const isBase64Avatar = m.avatar && m.avatar.startsWith('data:');
     const thumbnailObj = (m.avatar && !isBase64Avatar) ? { url: m.avatar } : undefined;
+
+    // สร้างคำอวยพรเรียบหรูด้วย Claude API
+    let bdayWish = null;
+    try {
+      const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 200,
+          messages: [{
+            role: 'user',
+            content: `สร้างคำอวยพรวันเกิดสำหรับ "${m.nick}" ภาษาไทย สไตล์เรียบหรู มีความหมาย กระชับ 1-2 ประโยค ห้ามใช้อีโมจิ ห้ามใช้คำสแลง ห้ามใช้ประโยคสำเร็จรูป ตอบแค่คำอวยพรเท่านั้น`
+          }]
+        })
+      });
+      if (aiRes.ok) {
+        const aiData = await aiRes.json();
+        bdayWish = aiData.content?.[0]?.text?.trim() || null;
+      }
+    } catch(e) {
+      console.warn('[Birthday] AI wish failed, ใช้ fallback', e);
+    }
+
+    // Fallback pool ถ้า AI ล้มเหลว
+    if (!bdayWish) {
+      const fallbacks = [
+        `ขอให้วันนี้และทุกวันที่จะมาถึงเป็นของ ${m.nick} อย่างแท้จริง`,
+        `ปีใหม่ของชีวิต ขอให้ทุกก้าวที่ ${m.nick} เดินไปมีความหมาย`,
+        `สุขสันต์วันเกิด ${m.nick} ขอให้ได้ในสิ่งที่ต้องการและมีสุขภาพแข็งแรง`,
+        `ขอให้ปีนี้เป็นปีที่ดีที่สุดในชีวิตของ ${m.nick}`,
+      ];
+      bdayWish = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    }
+
+    const igHandle = m.ig.startsWith('@') ? m.ig : `@${m.ig}`;
 
     try {
       const res = await fetch(wh, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content: `@everyone 🎂 วันนี้เป็นวันเกิดของ **${m.nick}** แล้ว!!`,
+          content: `@everyone`,
           embeds: [{
-            title: `🎂  Happy Birthday, ${m.nick}!`,
-            description: `วันนี้เป็นวันเกิดของ **${m.nick}** แล้ว!! 🥳\nขอให้มีความสุขมากๆ ตลอดปีเลยนะ~ ✨`,
-            color: 0xEB459E,
+            title: `Happy Birthday, ${m.nick}`,
+            description: bdayWish,
+            color: 0x1a1a2e,
             fields: [
-              { name: 'Instagram', value: (m.ig.startsWith('@') ? m.ig : `@${m.ig}`), inline: true },
-              { name: 'GEN', value: `${m.gen}`, inline: true }
+              { name: 'ชื่อเล่น', value: m.nick, inline: true },
+              { name: 'Instagram', value: igHandle, inline: true },
+              { name: 'GEN', value: m.gen, inline: true }
             ],
             thumbnail: thumbnailObj,
-            footer: { text: 'THEZESTORA BIRTHDAY BOT' },
+            footer: { text: 'THEZESTORA' },
             timestamp: new Date().toISOString()
           }]
         })
       });
       if (res.ok) {
         console.log(`[Birthday] ✅ ส่ง Discord สำเร็จสำหรับ ${m.nick}`);
+        localStorage.setItem(webhookSentKey, '1');
       } else {
         const errText = await res.text();
         console.error(`[Birthday] ❌ Discord ตอบ ${res.status}:`, errText);
