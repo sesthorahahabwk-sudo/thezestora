@@ -234,23 +234,34 @@ nav.scrolled {
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
   z-index: 999;
-  padding: 8px 0 16px;
+  padding: 0;
   transform: translateY(-10px);
   opacity: 0;
   transition: transform 0.3s, opacity 0.3s;
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .mobile-menu.open {
   display: block;
   transform: translateY(0);
   opacity: 1;
 }
+.mobile-menu-group-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  color: var(--gray); text-transform: uppercase;
+  padding: 14px 2rem 5px;
+  border-top: 1px solid var(--gray2);
+  margin-top: 4px;
+}
+.mobile-menu-group-label:first-child { border-top: none; margin-top: 0; padding-top: 12px; }
 .mobile-btn {
   display: block; width: 100%;
   background: none; border: none;
   color: var(--gray);
   font-family: 'Sarabun', sans-serif;
   font-size: 15px; font-weight: 600;
-  padding: 14px 2rem;
+  padding: 12px 2rem;
   cursor: pointer; text-align: left;
   border-left: 3px solid transparent;
   transition: color 0.2s, border-color 0.2s, background 0.2s;
@@ -262,6 +273,16 @@ nav.scrolled {
   border-left-color: var(--red);
   background: rgba(14,14,14,0.60);
 }
+.mobile-btn.admin-btn {
+  color: var(--red-light);
+  font-weight: 700;
+  border-left: 3px solid var(--red);
+  background: rgba(30,122,60,0.07);
+  margin: 6px 12px 12px;
+  width: calc(100% - 24px);
+  padding: 13px 1.5rem;
+}
+.mobile-btn.admin-btn:hover { background: rgba(30,122,60,0.15); color: #fff; }
 
 /* ====== PAGES ====== */
 .page {
@@ -1856,20 +1877,27 @@ input[type="file"] { display: none; }
 
 <!-- Mobile Menu -->
 <div class="mobile-menu" id="mobile-menu">
+  <div class="mobile-menu-group-label" style="border-top:none;margin-top:0;padding-top:10px;">⚙️ Admin</div>
+  <button class="mobile-btn admin-btn" onclick="showPage('admin');closeMobileMenu()">🔐 Admin Panel</button>
+  <button class="mobile-btn" onclick="showPage('dm');closeMobileMenu()" style="padding-left:2.5rem;font-size:14px;">↳ DM Admin</button>
+
+  <div class="mobile-menu-group-label">เมนูหลัก</div>
   <button class="mobile-btn active" onclick="showPage('home');closeMobileMenu()">หน้าแรก</button>
   <button class="mobile-btn" onclick="showPage('announce');closeMobileMenu()">ประกาศ</button>
   <button class="mobile-btn" onclick="showPage('members');closeMobileMenu()">สมาชิก</button>
   <button class="mobile-btn" onclick="showPage('rules');closeMobileMenu()">กฎแก๊งค์</button>
+
+  <div class="mobile-menu-group-label">กิจกรรม</div>
   <button class="mobile-btn" onclick="showPage('checkin');closeMobileMenu()">เช็คชื่อ</button>
   <button class="mobile-btn" onclick="showPage('poll');closeMobileMenu()">โหวต</button>
-  <button class="mobile-btn" onclick="showPage('gallery');closeMobileMenu()">แกลเลอรี่</button>
   <button class="mobile-btn" onclick="showPage('calendar');closeMobileMenu()">ปฏิทิน</button>
   <button class="mobile-btn" onclick="showPage('leaderboard');closeMobileMenu()">Leaderboard</button>
-  <button class="mobile-btn" onclick="showPage('dm');closeMobileMenu()">DM Admin</button>
+  <button class="mobile-btn" onclick="showPage('gallery');closeMobileMenu()">แกลเลอรี่</button>
+
+  <div class="mobile-menu-group-label">บัญชีของฉัน</div>
   <button class="mobile-btn" onclick="showPage('verify');closeMobileMenu()">ยืนยันตัวตน</button>
   <button class="mobile-btn" onclick="showPage('changeinfo');closeMobileMenu()">เปลี่ยนข้อมูล</button>
-  <button class="mobile-btn" onclick="showPage('leave');closeMobileMenu()">ขอออก</button>
-  <button class="mobile-btn" onclick="showPage('admin');closeMobileMenu()">Admin</button>
+  <button class="mobile-btn" onclick="showPage('leave');closeMobileMenu()" style="color:#ff7070;">ขอออกจากแก๊งค์</button>
 </div>
 
 <!-- ====== HOME PAGE ====== -->
@@ -2765,6 +2793,20 @@ input[type="file"] { display: none; }
   </div>
 </div>
 
+<!-- ====== ANNIVERSARY OVERLAY ====== -->
+<div class="birthday-overlay" id="anniversary-overlay">
+  <div class="birthday-confetti-wrap" id="ann-confetti"></div>
+  <div class="bday-box">
+    <div class="bday-label">✦ THEZESTORA ✦</div>
+    <div class="bday-text">HAPPY <span>ANNI</span>VERSARY</div>
+    <div class="bday-divider"></div>
+    <div class="bday-name" id="ann-months"></div>
+    <div class="bday-ig" id="ann-sub"></div>
+    <div class="bday-emoji" style="font-size:36px;">🥂</div>
+    <button class="bday-close-btn" onclick="closeAnniversary()">ไชโย! 🎉</button>
+  </div>
+</div>
+
 <!-- ====== POPUPS ====== -->
 <div class="popup-overlay" id="leave-popup">
   <div class="popup-box">
@@ -2965,11 +3007,35 @@ async function sbFetch(table, method='GET', body=null, query='') {
 
 async function sbLoad() {
   try {
-    // โหลดข้อมูลทุกตารางพร้อมกัน
-    const [m, p, a, rules, sessions, pollsRes, galleryRes, calRes, dmRes, leaveRes] = await Promise.all([
+    // === PRIORITY 1: โหลดก่อน — render หน้าได้ทันที ===
+    const [m, a, settingsRes] = await Promise.all([
       sbFetch('members','GET',null,'?order=created_at.asc'),
-      sbFetch('pending_members','GET',null,'?order=created_at.asc'),
       sbFetch('announcements','GET',null,'?order=created_at.desc'),
+      sbFetch('settings','GET',null,'?id=eq.1'),
+    ]);
+    if (m) members = m;
+    if (a) announcements = a;
+    if (settingsRes && settingsRes[0] && settingsRes[0].bgmusic) {
+      bgMusicData = settingsRes[0].bgmusic;
+    }
+
+    // render ทันทีหลังได้ข้อมูลหลัก
+    updateHomeStats();
+    renderMembers();
+    renderAnnouncements();
+    syncBgMusicUI();
+    if (bgMusicData) startBgMusic();
+
+    // === PRIORITY 2: โหลดเบื้องหลัง — ไม่บล็อก UI ===
+    sbLoadSecondary();
+
+  } catch(e) { console.error('sbLoad error:', e); }
+}
+
+async function sbLoadSecondary() {
+  try {
+    const [p, rules, sessions, pollsRes, galleryRes, calRes, dmRes, leaveRes] = await Promise.all([
+      sbFetch('pending_members','GET',null,'?order=created_at.asc'),
       sbFetch('gang_rules','GET',null,'?order=created_at.asc'),
       sbFetch('checkin_sessions','GET',null,'?order=created_at.asc'),
       sbFetch('polls','GET',null,'?order=created_at.asc'),
@@ -2978,9 +3044,7 @@ async function sbLoad() {
       sbFetch('dm_messages','GET',null,'?order=created_at.desc'),
       sbFetch('leave_requests','GET',null,'?order=created_at.desc'),
     ]);
-    if (m) members = m;
     if (p) pendingMembers = p;
-    if (a) announcements = a;
     if (rules) gangRules = rules;
     if (pollsRes) polls = pollsRes.map(p => ({
       ...p,
@@ -2991,36 +3055,28 @@ async function sbLoad() {
     if (dmRes) dmMessages = dmRes.map(m => ({ ...m, read: m.is_read }));
     if (leaveRes) leaveRequests = leaveRes;
 
-    // โหลด bgMusic จาก settings
-    const settingsRes = await sbFetch('settings', 'GET', null, '?id=eq.1');
-    if (settingsRes && settingsRes[0] && settingsRes[0].bgmusic) {
-      bgMusicData = settingsRes[0].bgmusic;
-    }
-
     // โหลด checkin sessions พร้อม entries
     if (sessions) {
       const activeArr = sessions.filter(s => s.is_active);
       const doneArr = sessions.filter(s => !s.is_active);
-
-      // โหลด checkin_entries สำหรับทุก session
       const allEntries = await sbFetch('checkin_entries','GET',null,'?order=created_at.asc') || [];
-
       function attachEntries(sess) {
         const entries = allEntries.filter(e => String(e.session_id) === String(sess.id));
         return { ...sess, checkedIn: entries.map(e => ({ ig: e.ig, nick: e.nick, time: e.time })) };
       }
-
       checkinSessions = doneArr.map(attachEntries);
       activeSession = activeArr.length > 0 ? attachEntries(activeArr[activeArr.length-1]) : null;
-
-      // ตรวจสอบ session หมดอายุ
       if (activeSession && Date.now() > activeSession.ends_at) {
         await sbFetch('checkin_sessions','PATCH',{ is_active: false },`?id=eq.${activeSession.id}`);
         checkinSessions.push({ ...activeSession, is_active: false });
         activeSession = null;
       }
     }
-  } catch(e) { console.error('sbLoad error:', e); }
+
+    updateBadge();
+    updateDMBadge();
+    updateAdminNavBadge();
+  } catch(e) { console.error('sbLoadSecondary error:', e); }
 }
 
 // ====== STATE ======
@@ -3038,7 +3094,7 @@ let polls = [];
 let gallery = [];
 let calEvents = [];
 let dmMessages = [];
-const DEFAULT_WEBHOOK_BIRTHDAY = 'https://discord.com/api/webhooks/1498317302867693758/kfsBVaEBL_PRKKeMABCwV0iBDGbTSWoM-XZajHpieW9A6ABCW6s4d3e9Xz1B6VtuxbJj';
+const DEFAULT_WEBHOOK_BIRTHDAY = 'https://discord.com/api/webhooks/1498607965962371133/af4AR-uD2oQTrxwQzCu0uFjepBDDcw6WXN1FREeEk_Xu2MqghwJnCPQfP3xQNNVYfD_a';
 const DEFAULT_WEBHOOK_LEAVE    = 'https://discord.com/api/webhooks/1495071381845708961/XP1oDJkzo18MOA37KuXIXTgSLh6TxqIFyrf0yuyRJiWK-MI0FUn9Lzxwd-TPHUEtQDDI';
 const DEFAULT_WEBHOOK_APPROVE  = 'https://discord.com/api/webhooks/1495077890155352296/W-_6UoNmjxDwFcwlTGme8x3WQgQyUpHyz_KV4QigTdoDO2DCnH1XboI5JxHSJbT61Msj';
 let webhookBirthday = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY;
@@ -4244,8 +4300,26 @@ async function checkBirthdays() {
   const mm = String(today.getMonth()+1).padStart(2,'0');
   const dd = String(today.getDate()).padStart(2,'0');
   const todayMD = `${mm}-${dd}`;
+  const todayFull = today.toDateString(); // เช่น "Mon Apr 28 2026"
 
   console.log(`[Birthday] ตรวจวันเกิด ${todayMD} จากสมาชิก ${members.length} คน`);
+
+  // โหลด bday_sent log จาก Supabase (ส่วนกลาง ทุกคนเห็นร่วมกัน)
+  let bdaySentLog = {};
+  try {
+    const settingsRow = await sbFetch('settings', 'GET', null, '?id=eq.1');
+    if (settingsRow && settingsRow[0] && settingsRow[0].bday_sent_log) {
+      bdaySentLog = settingsRow[0].bday_sent_log;
+    }
+    // ล้าง log เก่า (ที่ไม่ใช่วันนี้) เพื่อกันข้อมูลพอกพูน
+    const cleanLog = {};
+    for (const [k, v] of Object.entries(bdaySentLog)) {
+      if (k.startsWith(todayMD + '_')) cleanLog[k] = v;
+    }
+    bdaySentLog = cleanLog;
+  } catch(e) {
+    console.warn('[Birthday] โหลด bday_sent_log ล้มเหลว', e);
+  }
 
   const wh = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY;
 
@@ -4258,25 +4332,30 @@ async function checkBirthdays() {
 
     console.log(`[Birthday] 🎂 วันเกิดของ ${m.nick} (${m.ig})`);
 
-    // แสดง birthday overlay
+    // แสดง birthday overlay (แสดงทุกคนที่เปิดเว็บ ปกติ)
     showBirthdayOverlay(m);
     // Push notification วันเกิด
     if (notifSettings.bday) pushNotif(`🎂 Happy Birthday ${m.nick}!`, `วันนี้เป็นวันเกิดของ ${m.nick} (${m.ig}) ${m.gen} 🎉`, '🎂');
 
-    // ส่ง Discord webhook — ส่งแค่ครั้งเดียวต่อวันต่อคน
+    // ส่ง Discord webhook — เช็ค flag จาก Supabase (ส่วนกลาง)
     if (!wh) { console.warn('[Birthday] ไม่มี webhook URL'); continue; }
 
-    const webhookSentKey = `tz_bday_webhook_${todayMD}_${m.id || m.ig}`;
-    if (localStorage.getItem(webhookSentKey)) {
+    const webhookSentKey = `${todayMD}_${m.id || m.ig}`;
+    if (bdaySentLog[webhookSentKey]) {
       console.log(`[Birthday] ✅ ส่ง Discord ไปแล้วสำหรับ ${m.nick} วันนี้ ข้าม`);
       continue;
     }
+    // จอง flag ทันทีก่อนส่ง (กัน race condition หลายคนเปิดพร้อมกัน)
+    bdaySentLog[webhookSentKey] = '1';
+    try {
+      await sbFetch('settings', 'PATCH', { bday_sent_log: bdaySentLog }, '?id=eq.1');
+    } catch(e) { console.warn('[Birthday] บันทึก flag ล้มเหลว', e); }
 
     // ถ้า avatar เป็น base64 ให้ข้ามเพื่อกัน payload เกิน Discord limit
     const isBase64Avatar = m.avatar && m.avatar.startsWith('data:');
-    const thumbnailObj = (m.avatar && !isBase64Avatar) ? { url: m.avatar } : undefined;
+    const imageObj = (m.avatar && !isBase64Avatar) ? { url: m.avatar } : undefined;
 
-    // สร้างคำอวยพรเรียบหรูด้วย Claude API
+    // สร้างคำอวยพร Gen Z เรียบหรู ด้วย Claude API
     let bdayWish = null;
     try {
       const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -4284,10 +4363,10 @@ async function checkBirthdays() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 200,
+          max_tokens: 350,
           messages: [{
             role: 'user',
-            content: `สร้างคำอวยพรวันเกิดสำหรับ "${m.nick}" ภาษาไทย สไตล์เรียบหรู มีความหมาย กระชับ 1-2 ประโยค ห้ามใช้อีโมจิ ห้ามใช้คำสแลง ห้ามใช้ประโยคสำเร็จรูป ตอบแค่คำอวยพรเท่านั้น`
+            content: `สร้างคำอวยพรวันเกิดสำหรับ "${m.nick}" ภาษาไทย สไตล์ Gen Z เรียบหรูแต่มีตัวตน ภาษาสบายๆ ไม่ต้องขึงขัง มีน้ำหนัก 3-4 ประโยค ห้ามใช้ประโยคสำเร็จรูปอย่าง "ขอให้มีความสุข" หรือ "โชคดี" ห้ามใช้อีโมจิเด็ดขาด ตอบแค่คำอวยพรเท่านั้น`
           }]
         })
       });
@@ -4299,35 +4378,53 @@ async function checkBirthdays() {
       console.warn('[Birthday] AI wish failed, ใช้ fallback', e);
     }
 
-    // Fallback pool ถ้า AI ล้มเหลว
+    // Fallback pool — Gen Z เรียบหรู ไม่มีอีโมจิ
     if (!bdayWish) {
       const fallbacks = [
-        `ขอให้วันนี้และทุกวันที่จะมาถึงเป็นของ ${m.nick} อย่างแท้จริง`,
-        `ปีใหม่ของชีวิต ขอให้ทุกก้าวที่ ${m.nick} เดินไปมีความหมาย`,
-        `สุขสันต์วันเกิด ${m.nick} ขอให้ได้ในสิ่งที่ต้องการและมีสุขภาพแข็งแรง`,
-        `ขอให้ปีนี้เป็นปีที่ดีที่สุดในชีวิตของ ${m.nick}`,
+        `${m.nick} — ขอให้ปีนี้เป็นปีที่คุณเป็นตัวเองได้มากที่สุด`,
+        `happy birthday ${m.nick} ขอให้ได้ทุกอย่างที่ deserve`,
+        `${m.nick} เกิดมาเพื่อทำให้ทุกอย่างดูดีขึ้นจริงๆ — HBD`,
+        `ขอให้ปีนี้ ${m.nick} เจอแต่สิ่งที่ใช่ ทั้งคนและโมเมนต์`,
+        `HBD ${m.nick} — ขอให้ได้ในทุกสิ่งที่ควรได้`,
       ];
       bdayWish = fallbacks[Math.floor(Math.random() * fallbacks.length)];
     }
 
     const igHandle = m.ig.startsWith('@') ? m.ig : `@${m.ig}`;
+    const bdayAge = (() => {
+      if (!m.dob) return null;
+      const yr = parseInt((m.dob.split('-'))[0]);
+      const age = new Date().getFullYear() - yr;
+      return (age > 0 && age < 100) ? age : null;
+    })();
+
+    // content บน embed — ไม่มีอีโมจิ ใส่ชื่อและ @everyone
+    const msgContent = `✦ **HAPPY BIRTHDAY ${m.nick}** ✦ — @everyone`;
+
+    // สี banner — เขียวเข้มแบบ THEZESTORA
+    const embedColor = 0x1E7A3C;
 
     try {
       const res = await fetch(wh, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content: `@everyone`,
+          content: msgContent,
           embeds: [{
-            title: `Happy Birthday, ${m.nick}`,
-            description: bdayWish,
-            color: 0x1a1a2e,
+            title: `🎂 HAPPY BIRTHDAY, ${m.nick}`,
+            description: [
+              `### ${m.nick}`,
+              ``,
+              `*" ${bdayWish} "*`,
+            ].join('\n'),
+            color: embedColor,
             fields: [
               { name: 'ชื่อเล่น', value: m.nick, inline: true },
-              { name: 'Instagram', value: igHandle, inline: true },
-              { name: 'GEN', value: m.gen, inline: true }
+              { name: 'INSTAGRAM', value: igHandle, inline: true },
+              { name: 'GEN', value: m.gen || '-', inline: true },
+              ...(bdayAge ? [{ name: 'อายุ', value: `${bdayAge} ปี`, inline: true }] : []),
             ],
-            thumbnail: thumbnailObj,
+            image: imageObj,
             footer: { text: 'THEZESTORA' },
             timestamp: new Date().toISOString()
           }]
@@ -4335,13 +4432,19 @@ async function checkBirthdays() {
       });
       if (res.ok) {
         console.log(`[Birthday] ✅ ส่ง Discord สำเร็จสำหรับ ${m.nick}`);
-        localStorage.setItem(webhookSentKey, '1');
+        // flag ถูกบันทึกใน Supabase แล้วก่อนส่ง (บรรทัดด้านบน)
       } else {
         const errText = await res.text();
         console.error(`[Birthday] ❌ Discord ตอบ ${res.status}:`, errText);
+        // ถ้าส่งไม่สำเร็จ ให้ลบ flag ออก เพื่อให้ลองใหม่ครั้งหน้า
+        delete bdaySentLog[webhookSentKey];
+        try { await sbFetch('settings', 'PATCH', { bday_sent_log: bdaySentLog }, '?id=eq.1'); } catch(e2) {}
       }
     } catch(e) {
       console.error('[Birthday] fetch error:', e);
+      // ถ้า error ให้ลบ flag ออก
+      delete bdaySentLog[webhookSentKey];
+      try { await sbFetch('settings', 'PATCH', { bday_sent_log: bdaySentLog }, '?id=eq.1'); } catch(e2) {}
     }
   }
 }
@@ -4369,6 +4472,69 @@ function showBirthdayOverlay(m) {
 
 function closeBirthday() {
   document.getElementById('birthday-overlay').classList.remove('show');
+}
+
+// ====== ANNIVERSARY SYSTEM ======
+const ANN_START = new Date(2025, 6, 10); // 10 กรกฎาคม 2025
+
+function getAnniversaryMonths() {
+  const now = new Date();
+  return (now.getFullYear() - ANN_START.getFullYear()) * 12 + (now.getMonth() - ANN_START.getMonth());
+}
+
+function showAnniversaryOverlay(months) {
+  document.getElementById('ann-months').textContent = `${months} เดือน`;
+  document.getElementById('ann-sub').textContent = `ขอบคุณทุกคนที่อยู่ด้วยกันมาตลอด`;
+  const confWrap = document.getElementById('ann-confetti');
+  confWrap.innerHTML = '';
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.style.cssText = `position:absolute;width:${4+Math.random()*8}px;height:${4+Math.random()*8}px;background:${['#1E7A3C','#FFD700','#ffffff','#A8E6BE','#FF6B6B','#00b450'][Math.floor(Math.random()*6)]};left:${Math.random()*100}%;top:-20px;border-radius:${Math.random()>0.5?'50%':'2px'};animation:confettiFall ${2+Math.random()*3}s linear ${Math.random()*2}s infinite;`;
+    confWrap.appendChild(c);
+  }
+  document.getElementById('anniversary-overlay').classList.add('show');
+}
+
+function closeAnniversary() {
+  document.getElementById('anniversary-overlay').classList.remove('show');
+}
+
+async function checkAnniversary() {
+  const now = new Date();
+  if (now.getDate() !== 10) return;
+  const months = getAnniversaryMonths();
+  if (months <= 0) return;
+
+  const sentKey = `tz_ann_sent_${now.getFullYear()}_${now.getMonth()}`;
+  const alreadySent = localStorage.getItem(sentKey);
+
+  showAnniversaryOverlay(months);
+
+  if (!alreadySent) {
+    localStorage.setItem(sentKey, '1');
+    const wh = localStorage.getItem('tz_webhook_birthday') || DEFAULT_WEBHOOK_BIRTHDAY;
+    const embedColor = 0x1E7A3C;
+    try {
+      await fetch(wh, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: `✦ **THEZESTORA ครบรอบ ${months} เดือน** ✦ — @everyone`,
+          embeds: [{
+            title: `🥂 HAPPY ANNIVERSARY`,
+            description: `### ${months} เดือนแล้ว\n\n*" ขอบคุณทุกคนที่อยู่ด้วยกันมาตลอด — THEZESTORA ยังคงอยู่ และจะอยู่ต่อไป "*`,
+            color: embedColor,
+            fields: [
+              { name: 'ครบรอบ', value: `${months} เดือน`, inline: true },
+              { name: 'วันก่อตั้ง', value: '10 ก.ค. 2568', inline: true },
+            ],
+            footer: { text: 'THEZESTORA' },
+            timestamp: new Date().toISOString()
+          }]
+        })
+      });
+    } catch(e) { console.error('[Anniversary] Discord error:', e); }
+  }
 }
 
 // ====== POLL SYSTEM ======
@@ -4786,6 +4952,16 @@ async function sendDM() {
   } else {
     showToast('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
   }
+}
+
+async function deleteMemberById(id) {
+  if (!confirm('ยืนยันการลบสมาชิกคนนี้ออกจากระบบ?')) return;
+  await sbFetch('members', 'DELETE', null, `?id=eq.${id}`);
+  members = members.filter(m => m.id !== id);
+  renderMembers();
+  renderAdminPanel();
+  adminSearchFilter(document.getElementById('admin-search-input') ? document.getElementById('admin-search-input').value : '');
+  showToast('ลบสมาชิกออกจากระบบแล้ว ✓', 'success');
 }
 
 async function deleteDM(id) {
@@ -5400,30 +5576,21 @@ function syncBgMusicUI() {
 
 // ====== INIT ======
 async function initApp() {
-  // โหลดข้อมูลจาก Supabase ก่อนเสมอ
   await sbLoad();
-  updateBadge();
-  updateDMBadge();
-  updateAdminNavBadge();
-  updateHomeStats();
-  renderMembers();
-  renderAnnouncements();
   observeReveals();
-  syncBgMusicUI(); // อัปเดต UI เพลงพื้นหลัง
 
-  // Check active session expiry (sbLoad already handles this, but double-check)
   if (activeSession) {
     startSessionTimer();
   }
 
-  // Birthday check (run once per day)
   const lastBdayCheck = localStorage.getItem('tz_bday_check');
   const todayStr = new Date().toDateString();
   if (lastBdayCheck !== todayStr) {
     localStorage.setItem('tz_bday_check', todayStr);
-    // รอ 5 วิเพื่อให้ Supabase โหลด members ครบก่อน
     setTimeout(checkBirthdays, 5000);
   }
+
+  setTimeout(checkAnniversary, 3000);
 }
 
 window.addEventListener('load', () => {
