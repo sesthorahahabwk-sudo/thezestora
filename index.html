@@ -98,8 +98,28 @@ body {
   top: 0; left: 0;
   width: 100%; height: 100%;
   pointer-events: none;
-  z-index: 0;
-  opacity: 0.35;
+  z-index: 5;
+  opacity: 0.25;
+}
+
+/* ====== DARK SMOKE CANVAS — ชั้นล่างสุด ====== */
+#smoke-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 1;
+}
+
+/* ====== GLOWING ORBS CANVAS — ชั้นบนควัน ====== */
+#orbs-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 7;
+  opacity: 1;
 }
 
 /* ====== NOISE TEXTURE OVERLAY ====== */
@@ -199,20 +219,24 @@ nav.scrolled {
 
 .nav-logo {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 26px;
+  font-size: 34px;
   background: linear-gradient(135deg,
-    #333333 0%, #888888 18%, #d8d8d8 38%,
-    #ffffff 50%, #d8d8d8 62%, #888888 82%, #333333 100%);
+    #444444 0%, #999999 15%, #efefef 35%,
+    #ffffff 50%, #e0e0e0 62%, #888888 82%, #333333 100%);
   background-size: 200% auto;
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: 4px; cursor: pointer;
+  letter-spacing: 6px; cursor: pointer;
   position: relative; z-index: 2;
-  transition: filter 0.3s; flex-shrink: 0;
-  animation: goldShimmer 5s linear infinite;
-  filter: drop-shadow(0 0 6px rgba(200,200,200,0.25));
+  transition: filter 0.3s, letter-spacing 0.3s; flex-shrink: 0;
+  animation: goldShimmer 4s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(220,220,220,0.45)) drop-shadow(0 0 20px rgba(180,180,180,0.2));
 }
-.nav-logo:hover { filter: drop-shadow(0 0 14px rgba(255,255,255,0.7)) brightness(1.2); animation-duration: 1.8s; }
+.nav-logo:hover {
+  filter: drop-shadow(0 0 16px rgba(255,255,255,0.9)) drop-shadow(0 0 36px rgba(220,220,220,0.6)) drop-shadow(0 0 60px rgba(170,170,170,0.3));
+  letter-spacing: 7px;
+  animation-duration: 1.6s;
+}
 .nav-logo span { background: inherit; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 
 /* Desktop nav */
@@ -1092,6 +1116,113 @@ input[type="file"] { display: none; }
 }
 .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
+/* ====== GLYPH GLOW — special characters shine ====== */
+.empty-state-icon,
+.popup-icon,
+.lb-podium-crown,
+.btn-export-icon,
+.bday-widget-title {
+  color: var(--red-light);
+}
+
+.empty-state-icon {
+  opacity: 1 !important;
+  color: rgba(200,200,200,0.55);
+  text-shadow:
+    0 0 8px rgba(255,255,255,0.5),
+    0 0 20px rgba(200,200,200,0.25),
+    0 0 40px rgba(160,160,160,0.1);
+  animation: glyphPulse 3s ease-in-out infinite;
+}
+
+.popup-icon {
+  color: rgba(220,220,220,0.8);
+  text-shadow:
+    0 0 10px rgba(255,255,255,0.6),
+    0 0 24px rgba(210,210,210,0.3),
+    0 0 48px rgba(170,170,170,0.15);
+  animation: glyphPulse 2.5s ease-in-out infinite;
+}
+
+.lb-podium-crown {
+  color: rgba(230,230,230,0.9);
+  text-shadow:
+    0 0 8px rgba(255,255,255,0.7),
+    0 0 18px rgba(210,210,210,0.4),
+    0 0 36px rgba(180,180,180,0.2);
+  animation: glyphPulse 3.5s ease-in-out infinite;
+}
+
+.btn-export-icon {
+  color: rgba(200,200,200,0.7);
+  text-shadow:
+    0 0 6px rgba(255,255,255,0.4),
+    0 0 14px rgba(200,200,200,0.2);
+  transition: text-shadow 0.3s, color 0.3s;
+}
+.btn-export:hover .btn-export-icon {
+  color: rgba(255,255,255,0.95);
+  text-shadow:
+    0 0 10px rgba(255,255,255,0.8),
+    0 0 24px rgba(220,220,220,0.5),
+    0 0 48px rgba(180,180,180,0.25);
+}
+
+.bday-widget-title {
+  color: var(--white);
+  text-shadow:
+    0 0 8px rgba(255,255,255,0.3),
+    0 0 20px rgba(200,200,200,0.15);
+}
+
+/* Glyph used inline in toast icons */
+.toast-glyph {
+  color: rgba(220,220,220,0.9);
+  text-shadow:
+    0 0 6px rgba(255,255,255,0.6),
+    0 0 14px rgba(200,200,200,0.3);
+}
+
+/* Checkin badge present glyph */
+.checkin-badge.present {
+  text-shadow: 0 0 6px rgba(255,255,255,0.4);
+}
+
+/* Section title glyph accent */
+.section-title::before {
+  content: '⟡';
+  margin-right: 10px;
+  font-size: 0.75em;
+  color: rgba(200,200,200,0.5);
+  text-shadow:
+    0 0 8px rgba(255,255,255,0.5),
+    0 0 18px rgba(200,200,200,0.25);
+  font-family: 'Bebas Neue', sans-serif;
+  vertical-align: middle;
+}
+
+/* Mobile admin button glyph */
+.mobile-btn.admin-btn {
+  text-shadow: 0 0 8px rgba(200,200,200,0.2);
+}
+
+@keyframes glyphPulse {
+  0%, 100% {
+    text-shadow:
+      0 0 6px rgba(255,255,255,0.4),
+      0 0 16px rgba(200,200,200,0.18),
+      0 0 32px rgba(160,160,160,0.08);
+    opacity: 0.6;
+  }
+  50% {
+    text-shadow:
+      0 0 10px rgba(255,255,255,0.65),
+      0 0 24px rgba(210,210,210,0.32),
+      0 0 50px rgba(170,170,170,0.15);
+    opacity: 0.9;
+  }
+}
+
 /* ====== SCROLL REVEAL ====== */
 .reveal {
   opacity: 0; transform: translateY(24px);
@@ -1103,33 +1234,81 @@ input[type="file"] { display: none; }
 .page-loader {
   position: fixed; inset: 0; z-index: 9999;
   background: #000000;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(80,80,80,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(60,60,60,0.10) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 85%, rgba(60,60,60,0.10) 0%, transparent 50%);
   display: flex; align-items: center; justify-content: center;
   flex-direction: column; gap: 20px;
   transition: opacity 0.5s, visibility 0.5s;
+  overflow: hidden;
+}
+.page-loader::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 15%, rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1px 1px at 22% 42%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(2px 2px at 35% 8%, rgba(255,255,255,0.65) 0%, transparent 100%),
+    radial-gradient(1px 1px at 48% 28%, rgba(255,255,255,0.40) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 55%, rgba(255,255,255,0.50) 0%, transparent 100%),
+    radial-gradient(1px 1px at 72% 18%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(2px 2px at 85% 38%, rgba(255,255,255,0.60) 0%, transparent 100%),
+    radial-gradient(1px 1px at 92% 70%, rgba(255,255,255,0.30) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 5% 65%, rgba(255,255,255,0.45) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 82%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(2px 2px at 28% 72%, rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1px 1px at 42% 88%, rgba(255,255,255,0.30) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 55% 78%, rgba(255,255,255,0.45) 0%, transparent 100%),
+    radial-gradient(1px 1px at 68% 90%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 78% 62%, rgba(255,255,255,0.40) 0%, transparent 100%),
+    radial-gradient(2px 2px at 88% 12%, rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1px 1px at 95% 48%, rgba(255,255,255,0.30) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 3% 30%, rgba(255,255,255,0.45) 0%, transparent 100%),
+    radial-gradient(1px 1px at 38% 50%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 65% 35%, rgba(255,255,255,0.40) 0%, transparent 100%);
+  animation: loaderStarTwinkle 4s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+.page-loader::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 35%, rgba(0,0,0,0.55) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes loaderStarTwinkle {
+  0%   { opacity: 0.5; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.6; }
 }
 .page-loader.hidden { opacity: 0; visibility: hidden; }
 .loader-logo {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 36px; letter-spacing: 8px;
-  background: linear-gradient(135deg, #555555 0%, #aaaaaa 40%, #e8e8e8 60%, #aaaaaa 80%, #555555 100%);
+  font-size: 42px; letter-spacing: 12px;
+  background: linear-gradient(135deg, #444444 0%, #aaaaaa 35%, #f0f0f0 55%, #ffffff 62%, #cccccc 72%, #888888 85%, #444444 100%);
   background-size: 200% auto;
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: loaderPulse 1s ease-in-out infinite, goldShimmer 2s linear infinite;
+  animation: loaderPulse 1.4s ease-in-out infinite, goldShimmer 2s linear infinite;
+  position: relative; z-index: 1;
+  filter: drop-shadow(0 0 14px rgba(255,255,255,0.45)) drop-shadow(0 0 30px rgba(200,200,200,0.2));
 }
 .loader-logo span { background: inherit; -webkit-background-clip: text; background-clip: text; }
 .loader-bar {
-  width: 200px; height: 1px;
-  background: var(--gray2); position: relative;
+  width: 260px; height: 1px;
+  background: rgba(255,255,255,0.08); position: relative; z-index: 1;
+  margin-top: 8px;
 }
 .loader-bar::after {
   content: '';
   position: absolute; top: 0; left: 0; height: 100%;
-  background: linear-gradient(90deg, #555555, #aaaaaa, #e8e8e8, #aaaaaa);
-  animation: loadBar 1.2s ease forwards;
-  box-shadow: 0 0 10px rgba(180,180,180,0.30), 0 0 20px rgba(180,180,180,0.15);
+  background: linear-gradient(90deg, transparent, #888888, #e0e0e0, #ffffff, #e0e0e0, #888888, transparent);
+  animation: loadBar 1.4s ease forwards;
+  box-shadow: 0 0 12px rgba(220,220,220,0.5), 0 0 30px rgba(180,180,180,0.25);
 }
-@keyframes loaderPulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+@keyframes loaderPulse { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
 @keyframes loadBar { from { width: 0; } to { width: 100%; } }
 @keyframes goldShimmer {
   0%   { background-position: 200% center; }
@@ -1205,7 +1384,7 @@ input[type="file"] { display: none; }
 /* ====== BIRTHDAY OVERLAY ====== */
 .birthday-overlay {
   display: none; position: fixed; inset: 0; z-index: 5000;
-  background: radial-gradient(ellipse at center, rgba(10,30,15,0.97) 0%, rgba(0,0,0,0.98) 100%);
+  background: radial-gradient(ellipse at center, rgba(12,12,18,0.97) 0%, rgba(0,0,0,0.98) 100%);
   backdrop-filter: blur(20px);
   align-items: center; justify-content: center; flex-direction: column;
 }
@@ -1214,7 +1393,7 @@ input[type="file"] { display: none; }
 .bday-box {
   text-align: center; position: relative; z-index: 2;
   padding: 48px 48px 40px;
-  background: linear-gradient(160deg, rgba(14,40,20,0.85) 0%, rgba(5,12,8,0.9) 100%);
+  background: linear-gradient(160deg, rgba(18,18,24,0.90) 0%, rgba(5,5,8,0.95) 100%);
   border: 1px solid rgba(180,180,180,0.25);
   box-shadow: 0 0 80px rgba(180,180,180,0.12), 0 40px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(220,220,220,0.08);
   max-width: 440px; width: 90%;
@@ -1234,7 +1413,7 @@ input[type="file"] { display: none; }
 .bday-avatar {
   width: 110px; height: 110px; border-radius: 50%;
   border: 3px solid transparent;
-  background: linear-gradient(#0a1e0f,#0a1e0f) padding-box,
+  background: linear-gradient(#0d0d14,#0d0d14) padding-box,
               linear-gradient(135deg,#555555,#e8e8e8,#555555) border-box;
   box-shadow: 0 0 30px rgba(180,180,180,0.35), 0 0 60px rgba(180,180,180,0.1);
   object-fit: cover; margin-bottom: 24px;
@@ -1243,7 +1422,7 @@ input[type="file"] { display: none; }
 .bday-avatar-placeholder {
   width: 110px; height: 110px; border-radius: 50%;
   border: 3px solid transparent;
-  background: linear-gradient(#0a1e0f,#0a1e0f) padding-box,
+  background: linear-gradient(#0d0d14,#0d0d14) padding-box,
               linear-gradient(135deg,#555555,#e8e8e8,#555555) border-box;
   box-shadow: 0 0 30px rgba(180,180,180,0.35);
   display: flex; align-items: center; justify-content: center;
@@ -1621,7 +1800,7 @@ input[type="file"] { display: none; }
   0%,100% { box-shadow: 0 0 0 0 rgba(180,180,180,0.15); }
   50% { box-shadow: 0 0 0 4px rgba(180,180,180,0); }
 }
-.bday-chip-today .bday-chip-name::after { content: ' 🎂'; }
+.bday-chip-today .bday-chip-name::after { content: ' ✦'; text-shadow: 0 0 8px rgba(255,255,255,0.6), 0 0 18px rgba(220,220,220,0.3); }
 .bday-chip-tag {
   font-size: 9px; font-weight: 700; letter-spacing: 1px;
   padding: 2px 6px; margin-left: 4px; vertical-align: middle;
@@ -1953,40 +2132,116 @@ input[type="file"] { display: none; }
   font-family:'Bebas Neue',sans-serif;
   overflow:hidden;
 ">
-  <!-- particle sparks canvas -->
-  <canvas id="splash-particles" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.6;"></canvas>
+  <!-- Deep star canvas -->
+  <canvas id="splash-particles" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
 
-  <div style="
-    position:relative;z-index:2;
-    display:flex;align-items:center;justify-content:center;
-    width:100%;
-    max-width:min(90vw,720px);
-    padding:0 20px;
-    animation:splashLogoIn 1.2s cubic-bezier(0.16,1,0.3,1) both;
-  ">
-    <canvas id="splash-logo-canvas" style="width:clamp(300px,75vw,700px);height:auto;display:block;margin:0 auto;filter:drop-shadow(0 0 4px rgba(255,255,255,0.5)) drop-shadow(0 0 12px rgba(200,200,200,0.2));animation:splashLogoFlicker 4s ease-in-out infinite;"></canvas>
-    <img id="splash-logo-img" src="" style="display:none;" onload="logoRemoveBg(this,'splash-logo-canvas')">
+  <!-- Ambient light beams -->
+  <div style="position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;">
+    <div style="position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:120%;background:conic-gradient(from 270deg at 50% 0%,transparent 75deg,rgba(180,180,180,0.03) 90deg,rgba(255,255,255,0.055) 97deg,rgba(180,180,180,0.03) 104deg,transparent 119deg);animation:splashBeamSway 8s ease-in-out infinite alternate;"></div>
+    <div style="position:absolute;top:-20%;left:35%;width:400px;height:110%;background:conic-gradient(from 270deg at 50% 0%,transparent 80deg,rgba(180,180,180,0.025) 90deg,rgba(220,220,220,0.04) 97deg,rgba(180,180,180,0.025) 104deg,transparent 114deg);animation:splashBeamSway 11s ease-in-out infinite alternate-reverse;"></div>
+    <div style="position:absolute;top:-20%;left:65%;width:400px;height:110%;background:conic-gradient(from 270deg at 50% 0%,transparent 80deg,rgba(180,180,180,0.025) 90deg,rgba(220,220,220,0.04) 97deg,rgba(180,180,180,0.025) 104deg,transparent 114deg);animation:splashBeamSway 9s ease-in-out infinite alternate;"></div>
   </div>
 
-  <div style="position:relative;z-index:2;margin-top:28px;font-size:clamp(10px,2.2vw,13px);letter-spacing:9px;color:rgba(200,200,200,0.55);animation:splashTextIn 1s ease 1s both;animation-fill-mode:both;">TAP TO ENTER</div>
-  <div style="position:relative;z-index:2;margin-top:8px;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,0.2);font-family:'Sarabun',sans-serif;animation:splashTextIn 1s ease 1.2s both;animation-fill-mode:both;">แตะเพื่อเข้าสู่เว็บไซต์</div>
+  <!-- Deep vignette -->
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 75% 75% at 50% 45%,transparent 28%,rgba(0,0,0,0.7) 65%,rgba(0,0,0,0.95) 100%);pointer-events:none;z-index:2;"></div>
+
+  <!-- Horizontal line top -->
+  <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(160,160,160,0.2) 20%,rgba(255,255,255,0.3) 50%,rgba(160,160,160,0.2) 80%,transparent);z-index:3;animation:splashLineIn 2s ease 0.4s both;"></div>
+  <!-- Horizontal line bottom -->
+  <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(160,160,160,0.2) 20%,rgba(255,255,255,0.3) 50%,rgba(160,160,160,0.2) 80%,transparent);z-index:3;animation:splashLineIn 2s ease 0.4s both;"></div>
+
+  <!-- Main content -->
+  <div style="position:relative;z-index:4;display:flex;flex-direction:column;align-items:center;width:100%;max-width:min(92vw,800px);padding:0 24px;">
+
+    <!-- Top ornament -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:clamp(24px,5vh,48px);animation:splashOrnIn 1.2s ease 0.3s both;">
+      <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,0.5));max-width:120px;"></div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span style="width:4px;height:4px;background:rgba(200,200,200,0.6);transform:rotate(45deg);display:inline-block;box-shadow:0 0 6px rgba(255,255,255,0.5);"></span>
+        <span style="font-size:clamp(10px,1.8vw,13px);letter-spacing:10px;color:rgba(200,200,200,0.55);text-shadow:0 0 12px rgba(255,255,255,0.4);">T H E Z E S T O R A</span>
+        <span style="width:4px;height:4px;background:rgba(200,200,200,0.6);transform:rotate(45deg);display:inline-block;box-shadow:0 0 6px rgba(255,255,255,0.5);"></span>
+      </div>
+      <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(200,200,200,0.5),transparent);max-width:120px;"></div>
+    </div>
+
+    <!-- Logo -->
+    <div style="
+      display:flex;align-items:center;justify-content:center;
+      width:100%;
+      animation:splashLogoIn 1.6s cubic-bezier(0.16,1,0.3,1) 0.05s both;
+    ">
+      <canvas id="splash-logo-canvas" style="width:clamp(300px,78vw,760px);height:auto;display:block;margin:0 auto;filter:drop-shadow(0 0 8px rgba(255,255,255,0.7)) drop-shadow(0 0 24px rgba(210,210,210,0.4)) drop-shadow(0 0 60px rgba(160,160,160,0.18));animation:splashLogoFlicker 6s ease-in-out 1.2s infinite;"></canvas>
+      <img id="splash-logo-img" src="" style="display:none;" onload="logoRemoveBg(this,'splash-logo-canvas')">
+    </div>
+
+    <!-- Divider -->
+    <div style="display:flex;align-items:center;gap:18px;margin-top:clamp(24px,5vh,44px);animation:splashTextIn 1s ease 1s both;">
+      <div style="width:clamp(50px,10vw,120px);height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,0.45));"></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="width:3px;height:3px;background:rgba(200,200,200,0.5);border-radius:50%;box-shadow:0 0 5px rgba(255,255,255,0.5);"></span>
+        <span style="width:5px;height:5px;background:rgba(240,240,240,0.7);transform:rotate(45deg);box-shadow:0 0 8px rgba(255,255,255,0.7);"></span>
+        <span style="width:3px;height:3px;background:rgba(200,200,200,0.5);border-radius:50%;box-shadow:0 0 5px rgba(255,255,255,0.5);"></span>
+      </div>
+      <div style="width:clamp(50px,10vw,120px);height:1px;background:linear-gradient(90deg,rgba(200,200,200,0.45),transparent);"></div>
+    </div>
+
+    <!-- TAP TO ENTER -->
+    <div style="margin-top:clamp(20px,4vh,36px);text-align:center;animation:splashTextIn 1s ease 1.2s both;">
+      <div style="position:relative;display:inline-block;">
+        <!-- Glow pulse ring -->
+        <div style="position:absolute;inset:-12px;border:1px solid rgba(255,255,255,0.06);border-radius:3px;animation:splashRingPulse 3s ease-in-out 2.2s infinite;"></div>
+        <div style="font-size:clamp(11px,2.2vw,15px);letter-spacing:12px;color:rgba(230,230,230,0.75);font-family:'Bebas Neue',sans-serif;animation:splashPulse 2.8s ease-in-out 2s infinite;padding:0 4px;text-shadow:0 0 16px rgba(255,255,255,0.5),0 0 40px rgba(200,200,200,0.2);">T A P &nbsp; T O &nbsp; E N T E R</div>
+      </div>
+      <div style="margin-top:10px;font-size:clamp(9px,1.5vw,12px);letter-spacing:4px;color:rgba(255,255,255,0.25);font-family:'Sarabun',sans-serif;">แตะหน้าจอเพื่อเข้าสู่เว็บไซต์</div>
+    </div>
+
+  </div>
+
+  <!-- Corner decorations -->
+  <div style="position:absolute;top:20px;left:20px;width:30px;height:30px;border-top:1px solid rgba(200,200,200,0.3);border-left:1px solid rgba(200,200,200,0.3);z-index:4;animation:splashCornerIn 1.5s ease 0.6s both;"></div>
+  <div style="position:absolute;top:20px;right:20px;width:30px;height:30px;border-top:1px solid rgba(200,200,200,0.3);border-right:1px solid rgba(200,200,200,0.3);z-index:4;animation:splashCornerIn 1.5s ease 0.6s both;"></div>
+  <div style="position:absolute;bottom:20px;left:20px;width:30px;height:30px;border-bottom:1px solid rgba(200,200,200,0.3);border-left:1px solid rgba(200,200,200,0.3);z-index:4;animation:splashCornerIn 1.5s ease 0.6s both;"></div>
+  <div style="position:absolute;bottom:20px;right:20px;width:30px;height:30px;border-bottom:1px solid rgba(200,200,200,0.3);border-right:1px solid rgba(200,200,200,0.3);z-index:4;animation:splashCornerIn 1.5s ease 0.6s both;"></div>
 
   <style>
     @keyframes splashLogoIn{
-      0%{opacity:0;transform:scale(0.82) translateY(20px);}
-      60%{opacity:1;}
-      100%{opacity:1;transform:scale(1) translateY(0);}
+      0%{opacity:0;transform:scale(0.9) translateY(30px);filter:blur(4px);}
+      60%{opacity:1;filter:blur(0);}
+      100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0);}
     }
     @keyframes splashTextIn{
-      from{opacity:0;transform:translateY(6px);}
+      from{opacity:0;transform:translateY(10px);}
       to{opacity:1;transform:translateY(0);}
     }
+    @keyframes splashOrnIn{
+      from{opacity:0;transform:scaleX(0.5);}
+      to{opacity:1;transform:scaleX(1);}
+    }
+    @keyframes splashCornerIn{
+      from{opacity:0;transform:scale(0.5);}
+      to{opacity:1;transform:scale(1);}
+    }
+    @keyframes splashLineIn{
+      from{opacity:0;transform:scaleX(0);}
+      to{opacity:1;transform:scaleX(1);}
+    }
     @keyframes splashLogoFlicker{
-      0%,100%{filter:drop-shadow(0 0 4px rgba(255,255,255,0.45)) drop-shadow(0 0 10px rgba(200,200,200,0.18));}
-      45%{filter:drop-shadow(0 0 6px rgba(255,255,255,0.55)) drop-shadow(0 0 16px rgba(210,210,210,0.25));}
-      47%{filter:drop-shadow(0 0 2px rgba(255,255,255,0.3)) drop-shadow(0 0 6px rgba(200,200,200,0.1));}
-      49%{filter:drop-shadow(0 0 6px rgba(255,255,255,0.55)) drop-shadow(0 0 16px rgba(210,210,210,0.25));}
-      80%{filter:drop-shadow(0 0 5px rgba(255,255,255,0.5)) drop-shadow(0 0 14px rgba(200,200,200,0.22));}
+      0%,90%,100%{filter:drop-shadow(0 0 8px rgba(255,255,255,0.7)) drop-shadow(0 0 24px rgba(210,210,210,0.35)) drop-shadow(0 0 55px rgba(160,160,160,0.15));}
+      38%{filter:drop-shadow(0 0 12px rgba(255,255,255,0.9)) drop-shadow(0 0 32px rgba(220,220,220,0.5)) drop-shadow(0 0 70px rgba(175,175,175,0.25));}
+      39.5%{filter:drop-shadow(0 0 4px rgba(255,255,255,0.4)) drop-shadow(0 0 10px rgba(200,200,200,0.15));}
+      41%{filter:drop-shadow(0 0 10px rgba(255,255,255,0.8)) drop-shadow(0 0 28px rgba(215,215,215,0.4));}
+    }
+    @keyframes splashPulse{
+      0%,100%{opacity:0.6;}
+      50%{opacity:1;letter-spacing:14px;}
+    }
+    @keyframes splashRingPulse{
+      0%,100%{opacity:0;transform:scale(1);}
+      50%{opacity:1;transform:scale(1.04);}
+    }
+    @keyframes splashBeamSway{
+      0%{transform:translateX(-50%) rotate(-2deg);}
+      100%{transform:translateX(-50%) rotate(2deg);}
     }
   </style>
   <script>
@@ -1994,32 +2249,59 @@ input[type="file"] { display: none; }
     var c=document.getElementById('splash-particles');
     if(!c)return;
     var ctx=c.getContext('2d');
-    var W,H,pts=[];
+    var W,H,pts=[],meteors=[];
     function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
     resize();
     window.addEventListener('resize',resize);
-    for(var i=0;i<55;i++){
+    for(var i=0;i<120;i++){
       pts.push({
-        x:Math.random()*1,y:Math.random()*1,
-        vx:(Math.random()-0.5)*0.0003,
-        vy:(Math.random()-0.5)*0.0003,
-        size:Math.random()*1.4+0.3,
-        alpha:Math.random()*0.5+0.1,
-        flicker:Math.random()*Math.PI*2
+        x:Math.random(),y:Math.random(),
+        vx:(Math.random()-0.5)*0.00012,
+        vy:(Math.random()-0.5)*0.00012,
+        size:Math.random()*1.8+0.15,
+        alpha:Math.random()*0.55+0.06,
+        flicker:Math.random()*Math.PI*2,
+        speed:Math.random()*0.012+0.006
       });
     }
+    function spawnMeteor(){
+      if(!document.getElementById('sound-splash'))return;
+      meteors.push({
+        x:Math.random()*0.7+0.15,y:-0.04,
+        vx:(Math.random()-0.5)*0.003,vy:Math.random()*0.005+0.003,
+        len:Math.random()*0.1+0.05,life:1
+      });
+    }
+    setInterval(spawnMeteor,2800);
     function draw(){
       ctx.clearRect(0,0,W,H);
       pts.forEach(function(p){
         p.x+=p.vx; p.y+=p.vy;
         if(p.x<0)p.x=1; if(p.x>1)p.x=0;
         if(p.y<0)p.y=1; if(p.y>1)p.y=0;
-        p.flicker+=0.03;
-        var a=p.alpha*(0.6+0.4*Math.sin(p.flicker));
+        p.flicker+=p.speed;
+        var a=p.alpha*(0.5+0.5*Math.sin(p.flicker));
         ctx.beginPath();
         ctx.arc(p.x*W,p.y*H,p.size,0,Math.PI*2);
-        ctx.fillStyle='rgba(255,255,255,'+a+')';
+        ctx.fillStyle='rgba(255,255,255,'+a.toFixed(3)+')';
         ctx.fill();
+      });
+      meteors=meteors.filter(function(m){
+        m.x+=m.vx; m.y+=m.vy; m.life-=0.016;
+        if(m.life<=0||m.y>1.1)return false;
+        var a=Math.min(m.life*2.5,1)*0.65;
+        var g=ctx.createLinearGradient(m.x*W,m.y*H,(m.x-m.vx*m.len*W)*W,(m.y-m.vy*m.len*H)*H);
+        g.addColorStop(0,'rgba(255,255,255,'+a+')');
+        g.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.save();
+        ctx.strokeStyle=g;
+        ctx.lineWidth=1.4;
+        ctx.beginPath();
+        ctx.moveTo(m.x*W,m.y*H);
+        ctx.lineTo((m.x-m.vx*m.len*W)*W,(m.y-m.vy*m.len*H)*H);
+        ctx.stroke();
+        ctx.restore();
+        return true;
       });
       if(document.getElementById('sound-splash'))requestAnimationFrame(draw);
     }
@@ -2036,6 +2318,10 @@ input[type="file"] { display: none; }
 
 <!-- Particles -->
 <canvas id="particles-canvas"></canvas>
+<!-- Dark Smoke (layer below orbs) -->
+<canvas id="smoke-canvas"></canvas>
+<!-- Glowing Orbs (on top) -->
+<canvas id="orbs-canvas"></canvas>
 
 <!-- ====== NAVBAR ====== -->
 <nav id="navbar">
@@ -2072,7 +2358,7 @@ input[type="file"] { display: none; }
 <!-- Mobile Menu -->
 <div class="mobile-menu" id="mobile-menu">
   <div class="mobile-menu-group-label" style="border-top:none;margin-top:0;padding-top:10px;">⚙️ Admin</div>
-  <button class="mobile-btn admin-btn" onclick="showPage('admin');closeMobileMenu()">🔐 Admin Panel</button>
+  <button class="mobile-btn admin-btn" onclick="showPage('admin');closeMobileMenu()">⬡ Admin Panel</button>
   <button class="mobile-btn" onclick="showPage('dm');closeMobileMenu()" style="padding-left:2.5rem;font-size:14px;">↳ DM Admin</button>
 
   <div class="mobile-menu-group-label">เมนูหลัก</div>
@@ -2130,7 +2416,7 @@ input[type="file"] { display: none; }
   <!-- Birthday Upcoming Widget -->
   <div class="bday-widget" id="bday-widget-wrap" style="display:none;">
     <div class="bday-widget-card">
-      <div class="bday-widget-title">🎂 วันเกิด<span>สัปดาห์นี้</span></div>
+      <div class="bday-widget-title">✦ วันเกิด<span>สัปดาห์นี้</span></div>
       <div class="bday-widget-list" id="bday-widget-list"></div>
     </div>
   </div>
@@ -2146,7 +2432,7 @@ input[type="file"] { display: none; }
     <div class="announcements-grid" id="ann-list"></div>
     <div id="ann-empty" style="display:none;">
       <div class="empty-state">
-        <div class="empty-state-icon">📢</div>
+        <div class="empty-state-icon">⟡</div>
         <p>ยังไม่มีประกาศ</p>
       </div>
     </div>
@@ -2176,7 +2462,7 @@ input[type="file"] { display: none; }
     </div>
 
     <div class="search-bar reveal">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon">◎</span>
       <input class="search-input" type="text" id="member-search" placeholder="ค้นหาชื่อเล่น หรือ Instagram..." oninput="renderMembers()">
     </div>
 
@@ -2184,7 +2470,7 @@ input[type="file"] { display: none; }
     <div class="members-grid" id="members-list"></div>
     <div id="members-empty" style="display:none;">
       <div class="empty-state">
-        <div class="empty-state-icon">👥</div>
+        <div class="empty-state-icon">⊕</div>
         <p>ไม่พบสมาชิก</p>
       </div>
     </div>
@@ -2201,7 +2487,7 @@ input[type="file"] { display: none; }
     <div id="rules-list"></div>
     <div id="rules-empty" style="display:none;">
       <div class="empty-state">
-        <div class="empty-state-icon">📜</div>
+        <div class="empty-state-icon">⊟</div>
         <p>ยังไม่มีกฎแก๊งค์</p>
       </div>
     </div>
@@ -2239,7 +2525,7 @@ input[type="file"] { display: none; }
     <!-- No Active Session -->
     <div id="checkin-inactive-section">
       <div class="checkin-card reveal" style="text-align:center;padding:48px 32px;">
-        <div style="font-size:56px;margin-bottom:16px;">🔒</div>
+        <div style="font-size:48px;margin-bottom:16px;color:rgba(200,200,200,0.3);letter-spacing:0;">⬡</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--white);margin-bottom:12px;">ไม่มีเซสชันเปิดอยู่</div>
         <p style="font-size:14px;color:var(--gray);line-height:1.7;">แอดมินยังไม่ได้เปิดการเช็คชื่อ<br>รอให้แอดมินเปิดเซสชัน แล้วกลับมาเช็คชื่อได้เลย</p>
       </div>
@@ -2263,7 +2549,7 @@ input[type="file"] { display: none; }
     <div id="poll-list"></div>
     <div id="poll-empty" style="display:none;">
       <div class="empty-state">
-        <div class="empty-state-icon">🗳️</div>
+        <div class="empty-state-icon">✦</div>
         <p>ยังไม่มีโพล</p>
       </div>
     </div>
@@ -2280,7 +2566,7 @@ input[type="file"] { display: none; }
     <div class="gallery-grid" id="gallery-grid"></div>
     <div id="gallery-empty" style="display:none;margin-top:2rem;">
       <div class="empty-state">
-        <div class="empty-state-icon">📸</div>
+        <div class="empty-state-icon">⬡</div>
         <p>ยังไม่มีรูปภาพ</p>
       </div>
     </div>
@@ -2359,7 +2645,7 @@ input[type="file"] { display: none; }
     <div id="lb-table-wrap"></div>
     <div id="lb-empty" style="display:none;">
       <div class="empty-state">
-        <div class="empty-state-icon">🏆</div>
+        <div class="empty-state-icon">⋆</div>
         <p>ยังไม่มีข้อมูลเช็คชื่อ</p>
       </div>
     </div>
@@ -2401,7 +2687,7 @@ input[type="file"] { display: none; }
       <button class="btn-submit" onclick="sendDM()">ส่งข้อความ →</button>
 
       <div style="margin-top:20px;padding:14px 18px;background:rgba(10,10,10,0.65);border:1px solid var(--border);font-size:12px;color:var(--gray);line-height:1.8;">
-        🔒 ข้อความจะถูกส่งผ่าน Discord Webhook ไปยัง Admin เท่านั้น<br>
+        ⟡ ข้อความจะถูกส่งผ่าน Discord Webhook ไปยัง Admin เท่านั้น<br>
         ถ้าเลือกไม่ระบุตัวตน Admin จะไม่เห็นว่าใครส่ง
       </div>
     </div>
@@ -2488,7 +2774,7 @@ input[type="file"] { display: none; }
 
     <!-- STEP 1: ค้นหา IG -->
     <div class="form-card reveal ci-panel" id="ci-panel-1">
-      <div class="ci-panel-icon">🔍</div>
+      <div class="ci-panel-icon">◎</div>
       <div class="form-title" style="font-size:22px;">ค้นหา<span>บัญชี</span></div>
       <div class="form-divider"></div>
       <div class="form-sub">ใส่ Instagram เดิมของคุณที่สมัครไว้ในระบบ</div>
@@ -2512,7 +2798,7 @@ input[type="file"] { display: none; }
           <div id="chacc-result-meta" class="ci-profile-meta"></div>
         </div>
       </div>
-      <div class="ci-panel-icon" style="margin-top:1.2rem;">🔐</div>
+      <div class="ci-panel-icon" style="margin-top:1.2rem;">⬡</div>
       <div class="form-title" style="font-size:22px;">ยืนยัน<span>ตัวตน</span></div>
       <div class="form-divider"></div>
       <div class="form-sub">ใส่วันเกิดที่ลงทะเบียนไว้เพื่อยืนยันว่าเป็นบัญชีของคุณ</div>
@@ -2548,13 +2834,13 @@ input[type="file"] { display: none; }
       </div>
 
       <div class="form-divider"></div>
-      <div class="form-sub" style="margin-bottom:1.5rem;">✏️ แก้เฉพาะช่องที่ต้องการเปลี่ยน — ช่องว่าง = ไม่เปลี่ยน</div>
+      <div class="form-sub" style="margin-bottom:1.5rem;">✎️ แก้เฉพาะช่องที่ต้องการเปลี่ยน — ช่องว่าง = ไม่เปลี่ยน</div>
 
       <!-- รูปโปรไฟล์ใหม่ -->
       <div class="form-group">
         <label class="form-label">รูปโปรไฟล์ใหม่</label>
         <div class="ci-avatar-upload-row">
-          <div id="chacc-new-avatar-preview" class="ci-avatar-upload-preview">🖼️</div>
+          <div id="chacc-new-avatar-preview" class="ci-avatar-upload-preview">⬡️</div>
           <div class="ci-avatar-upload-info">
             <label class="upload-btn-label" for="chacc-new-avatar-input">เลือกรูปใหม่</label>
             <input type="file" id="chacc-new-avatar-input" accept="image/*" style="display:none;" onchange="chaccPreviewAvatar(this)">
@@ -2583,7 +2869,7 @@ input[type="file"] { display: none; }
 
       <div style="display:flex;gap:10px;margin-top:8px;">
         <button class="btn-outline" onclick="chaccReset()" style="flex:1;padding:14px;">← เริ่มใหม่</button>
-        <button class="btn-submit" onclick="chaccSave()" style="flex:2;">💾 บันทึกการเปลี่ยนแปลง</button>
+        <button class="btn-submit" onclick="chaccSave()" style="flex:2;">⊟ บันทึกการเปลี่ยนแปลง</button>
       </div>
     </div>
 
@@ -2602,7 +2888,7 @@ input[type="file"] { display: none; }
       <div class="form-divider"></div>
 
       <div class="leave-warning">
-        <strong>⚠️ โปรดอ่านก่อนกรอก</strong><br>
+        <strong>⟡ โปรดอ่านก่อนกรอก</strong><br>
         หลังจากกดส่งคำขอแล้ว ข้อมูลจะถูกส่งไปยัง Admin แก๊งค์<br>
         กรุณาอย่าลืม <strong>กดออกจากกลุ่ม</strong> และ <strong>อัลฟอลแอคไอจีแก๊งค์</strong> ด้วยนะครับ
       </div>
@@ -2668,14 +2954,14 @@ input[type="file"] { display: none; }
       <div class="section-title">Discord Webhooks</div>
       <div style="margin-bottom:1rem;">
         <label class="form-label" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          🎂 <span>Webhook วันเกิด (Happy Birthday)</span>
+          ✦ <span>Webhook วันเกิด (Happy Birthday)</span>
         </label>
         <div class="webhook-input-row">
           <input class="form-input" type="text" id="webhook-birthday" placeholder="https://discord.com/api/webhooks/... (สำหรับแจ้งวันเกิด)">
           <button class="btn-save" onclick="saveWebhookBirthday()">บันทึก</button>
         </div>
         <label class="form-label" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;margin-top:1rem;">
-          🚪 <span>Webhook คำขอออก (Leave Request)</span>
+          ⟡ <span>Webhook คำขอออก (Leave Request)</span>
         </label>
         <div class="webhook-input-row">
           <input class="form-input" type="text" id="webhook-leave" placeholder="https://discord.com/api/webhooks/... (สำหรับแจ้งการออก)">
@@ -2706,7 +2992,7 @@ input[type="file"] { display: none; }
       </div>
       <div id="ci-current-session" style="margin-bottom:1.5rem;display:none;">
         <div class="rules-admin-bar">
-          <span>🟢 เซสชันเปิดอยู่: <strong id="ci-active-name" style="color:var(--white);"></strong> — รหัส: <strong id="ci-active-code" style="color:var(--red);font-size:18px;letter-spacing:4px;"></strong></span>
+          <span>◎ เซสชันเปิดอยู่: <strong id="ci-active-name" style="color:var(--white);"></strong> — รหัส: <strong id="ci-active-code" style="color:var(--red);font-size:18px;letter-spacing:4px;"></strong></span>
           <span style="color:var(--gray);" id="ci-active-timer"></span>
         </div>
         <div id="ci-checked-list" style="background:var(--black3);border:1px solid var(--border);padding:12px;max-height:200px;overflow-y:auto;"></div>
@@ -2807,32 +3093,32 @@ input[type="file"] { display: none; }
       <div class="section-title" style="margin-top:2.5rem;">กล่องข้อความ DM <span id="dm-count-badge" style="font-size:14px;color:var(--red);font-family:'Sarabun',sans-serif;font-weight:700;"></span></div>
 
       <!-- Badge Overview -->
-      <div class="section-title" style="margin-top:2.5rem;">🏅 สรุป Achievement สมาชิก</div>
+      <div class="section-title" style="margin-top:2.5rem;">◆ สรุป Achievement สมาชิก</div>
       <div id="admin-badge-overview" style="margin-bottom:2rem;"></div>
 
       <!-- ====== EXPORT DATA ====== -->
-      <div class="section-title" style="margin-top:2.5rem;">📤 Export ข้อมูล</div>
+      <div class="section-title" style="margin-top:2.5rem;">⊓ Export ข้อมูล</div>
       <div class="export-grid">
         <button class="btn-export" onclick="exportMembers('csv')">
-          <span class="btn-export-icon">📋</span>
+          <span class="btn-export-icon">⊞</span>
           <div><div>สมาชิก (.CSV)</div><div class="btn-export-label">เปิดใน Excel / Google Sheets</div></div>
         </button>
         <button class="btn-export" onclick="exportMembers('json')">
-          <span class="btn-export-icon">💾</span>
+          <span class="btn-export-icon">⊟</span>
           <div><div>สมาชิก (.JSON)</div><div class="btn-export-label">สำรองข้อมูลทั้งหมด</div></div>
         </button>
         <button class="btn-export" onclick="exportCheckin()">
-          <span class="btn-export-icon">✅</span>
+          <span class="btn-export-icon">✓</span>
           <div><div>ประวัติเช็คชื่อ (.CSV)</div><div class="btn-export-label">ทุก session</div></div>
         </button>
         <button class="btn-export" onclick="exportFullBackup()">
-          <span class="btn-export-icon">🗄️</span>
+          <span class="btn-export-icon">⊞️</span>
           <div><div>Backup ทั้งหมด (.JSON)</div><div class="btn-export-label">สำรองข้อมูลระบบ</div></div>
         </button>
       </div>
 
       <!-- ====== PUSH NOTIFICATIONS ====== -->
-      <div class="section-title" style="margin-top:2.5rem;">🔔 Push Notification</div>
+      <div class="section-title" style="margin-top:2.5rem;">◎ Push Notification</div>
       <div class="notif-status-bar">
         <div class="notif-status-text">
           <span class="notif-status-dot" id="notif-dot"></span>
@@ -2843,21 +3129,21 @@ input[type="file"] { display: none; }
       <div class="notif-toggles" id="notif-toggles" style="display:none;">
         <div class="notif-toggle-row">
           <div class="notif-toggle-info">
-            📣 ประกาศใหม่
+            ⟡ ประกาศใหม่
             <small>แจ้งเตือนเมื่อ Admin โพสประกาศ</small>
           </div>
           <button class="toggle-switch" id="notif-ann-toggle" onclick="toggleNotif('ann')"></button>
         </div>
         <div class="notif-toggle-row">
           <div class="notif-toggle-info">
-            ✅ เปิดเช็คชื่อ
+            ✓ เปิดเช็คชื่อ
             <small>แจ้งเตือนเมื่อ Admin เปิด session เช็คชื่อ</small>
           </div>
           <button class="toggle-switch" id="notif-ci-toggle" onclick="toggleNotif('ci')"></button>
         </div>
         <div class="notif-toggle-row">
           <div class="notif-toggle-info">
-            🎂 วันเกิดสมาชิก
+            ✦ วันเกิดสมาชิก
             <small>แจ้งเตือนรายวันเมื่อมีคนเกิดวันนี้</small>
           </div>
           <button class="toggle-switch" id="notif-bday-toggle" onclick="toggleNotif('bday')"></button>
@@ -2866,14 +3152,14 @@ input[type="file"] { display: none; }
       <button class="btn-outline" onclick="sendTestNotif()" style="padding:9px 20px;font-size:13px;margin-bottom:2rem;" id="btn-test-notif" style="display:none;">ทดสอบส่งการแจ้งเตือน</button>
 
       <!-- ====== BG MUSIC ====== -->
-      <div class="section-title" style="margin-top:2.5rem;">🎵 เพลงพื้นหลัง (BGM)</div>
+      <div class="section-title" style="margin-top:2.5rem;">♪ เพลงพื้นหลัง (BGM)</div>
       <div style="background:var(--gray2);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;">
         <p style="font-size:12px;color:var(--gray);margin-bottom:14px;line-height:1.7;">เลือกวิธีใส่เพลง BGM — อัปโหลดไฟล์ หรือใส่ URL โดยตรงก็ได้ครับ เพลงจะเล่นอัตโนมัติทุกครั้งที่เปิดเว็บ</p>
 
         <!-- TAB SWITCHER -->
         <div style="display:flex;gap:4px;background:rgba(0,0,0,0.3);border-radius:8px;padding:3px;margin-bottom:16px;">
-          <button id="bgtab-file" onclick="bgTab('file')" style="flex:1;padding:8px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;background:var(--red);color:#fff;transition:all 0.2s;">📁 อัปโหลดไฟล์</button>
-          <button id="bgtab-url" onclick="bgTab('url')" style="flex:1;padding:8px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;background:transparent;color:var(--gray);transition:all 0.2s;">🔗 ใส่ URL</button>
+          <button id="bgtab-file" onclick="bgTab('file')" style="flex:1;padding:8px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;background:var(--red);color:#fff;transition:all 0.2s;">⊞ อัปโหลดไฟล์</button>
+          <button id="bgtab-url" onclick="bgTab('url')" style="flex:1;padding:8px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;background:transparent;color:var(--gray);transition:all 0.2s;">⊙ ใส่ URL</button>
         </div>
 
         <!-- FILE UPLOAD PANEL -->
@@ -2882,7 +3168,7 @@ input[type="file"] { display: none; }
             <label class="form-label">ไฟล์เพลง (MP3, WAV, OGG)</label>
             <input type="file" accept="audio/*" onchange="saveBgMusic(this)" style="width:100%;background:var(--black2);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--white);font-size:13px;">
           </div>
-          <p style="font-size:11px;color:var(--gray);margin-bottom:12px;line-height:1.6;">⚠ ถ้าไฟล์ใหญ่เกิน ~4MB อาจเต็ม Supabase — ให้สลับไปใช้ URL แทนครับ</p>
+          <p style="font-size:11px;color:var(--gray);margin-bottom:12px;line-height:1.6;">⚡ ถ้าไฟล์ใหญ่เกิน ~4MB อาจเต็ม Supabase — ให้สลับไปใช้ URL แทนครับ</p>
         </div>
 
         <!-- URL INPUT PANEL -->
@@ -2892,13 +3178,13 @@ input[type="file"] { display: none; }
             <input class="form-input" id="bgmusic-url" type="url" placeholder="https://example.com/song.mp3" oninput="previewBgURL()" style="font-size:13px;">
           </div>
           <div style="background:rgba(220,80,80,0.12);border:1px solid rgba(220,80,80,0.3);border-radius:8px;padding:10px 13px;margin-bottom:10px;">
-            <div style="font-size:11px;font-weight:700;color:#ff7070;margin-bottom:4px;">⚠️ Google Drive ใช้ไม่ได้ครับ (CORS blocked)</div>
+            <div style="font-size:11px;font-weight:700;color:#ff7070;margin-bottom:4px;">⚡ Google Drive ใช้ไม่ได้ครับ (CORS blocked)</div>
             <div style="font-size:11px;color:var(--gray);line-height:1.7;">ให้ใช้ <b style="color:var(--white);">Dropbox</b>: อัปโหลดเพลง → Share → Copy link → แปะที่นี่</div>
           </div>
           <div style="background:rgba(180,180,180,0.08);border:1px solid var(--border);border-radius:8px;padding:10px 13px;margin-bottom:10px;">
-            <div style="font-size:11px;color:var(--gray);line-height:1.9;">✅ <b>Dropbox:</b> https://www.dropbox.com/scl/fi/xxx/song.mp3?rlkey=xxx<br>✅ <b>Direct MP3:</b> https://yoursite.com/song.mp3</div>
+            <div style="font-size:11px;color:var(--gray);line-height:1.9;">✓ <b>Dropbox:</b> https://www.dropbox.com/scl/fi/xxx/song.mp3?rlkey=xxx<br>✓ <b>Direct MP3:</b> https://yoursite.com/song.mp3</div>
           </div>
-          <button class="btn-outline" onclick="saveBgURL()" style="padding:8px 18px;font-size:13px;">💾 บันทึก URL</button>
+          <button class="btn-outline" onclick="saveBgURL()" style="padding:8px 18px;font-size:13px;">⊟ บันทึก URL</button>
         </div>
 
         <!-- VOLUME -->
@@ -2909,15 +3195,15 @@ input[type="file"] { display: none; }
 
         <!-- CONTROLS -->
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn-outline" onclick="testBgMusic()" style="padding:8px 16px;font-size:13px;">▶ ทดสอบเล่น</button>
+          <button class="btn-outline" onclick="testBgMusic()" style="padding:8px 16px;font-size:13px;">⏵ ทดสอบเล่น</button>
           <button class="btn-outline" onclick="stopBgMusic();showToast('หยุดเพลงพื้นหลังแล้ว')" style="padding:8px 16px;font-size:13px;">⏹ หยุด</button>
-          <button class="btn-outline" onclick="removeBgMusic()" style="padding:8px 16px;font-size:13px;color:#ff7070;border-color:#ff7070;">🗑 ลบเพลง</button>
+          <button class="btn-outline" onclick="removeBgMusic()" style="padding:8px 16px;font-size:13px;color:#ff7070;border-color:#ff7070;">✕ ลบเพลง</button>
         </div>
         <div id="bgmusic-status" style="margin-top:10px;font-size:12px;color:var(--gray);">ยังไม่มีเพลง</div>
       </div>
 
       <!-- ====== CHANGE PASSWORD ====== -->
-      <div class="section-title" style="margin-top:2.5rem;">🔑 เปลี่ยนรหัสผ่าน Admin</div>
+      <div class="section-title" style="margin-top:2.5rem;">◈ เปลี่ยนรหัสผ่าน Admin</div>
       <div class="chpw-section">
         <div class="chpw-row">
           <div class="form-group">
@@ -2938,7 +3224,7 @@ input[type="file"] { display: none; }
       </div>
       <!-- Admin Search -->
       <div class="admin-search-bar">
-        <span class="admin-search-icon">🔍</span>
+        <span class="admin-search-icon">◎</span>
         <input type="text" id="admin-search-input" placeholder="ค้นหาสมาชิก, DM, คำขอออก..." oninput="adminSearchFilter(this.value)">
         <button class="admin-search-clear" id="admin-search-clear" onclick="clearAdminSearch()">✕</button>
       </div>
@@ -2959,7 +3245,7 @@ input[type="file"] { display: none; }
 <!-- ====== CONFIRM LEAVE POPUP ====== -->
 <div class="popup-overlay" id="confirm-leave-popup">
   <div class="popup-box">
-    <div class="popup-icon">⚠️</div>
+    <div class="popup-icon">⟡</div>
     <div class="popup-title">ยืนยัน<span>การออก</span></div>
     <div class="popup-msg">
       คุณ <strong id="confirm-leave-name" style="color:var(--red);"></strong> ต้องการออกจากแก๊งค์จริงๆ ใช่ไหม?<br>
@@ -2982,8 +3268,8 @@ input[type="file"] { display: none; }
     <div class="bday-divider"></div>
     <div class="bday-name" id="bday-name"></div>
     <div class="bday-ig" id="bday-ig"></div>
-    <div class="bday-emoji">🎂</div>
-    <button class="bday-close-btn" onclick="closeBirthday()">ขอบคุณ 🙏</button>
+    <div class="bday-emoji" style="font-size:48px;">✦</div>
+    <button class="bday-close-btn" onclick="closeBirthday()">ขอบคุณ ✦</button>
   </div>
 </div>
 
@@ -2996,15 +3282,15 @@ input[type="file"] { display: none; }
     <div class="bday-divider"></div>
     <div class="bday-name" id="ann-months"></div>
     <div class="bday-ig" id="ann-sub"></div>
-    <div class="bday-emoji" style="font-size:36px;">🥂</div>
-    <button class="bday-close-btn" onclick="closeAnniversary()">ไชโย! 🎉</button>
+    <div class="bday-emoji" style="font-size:36px;">✦</div>
+    <button class="bday-close-btn" onclick="closeAnniversary()">ไชโย! ✦</button>
   </div>
 </div>
 
 <!-- ====== POPUPS ====== -->
 <div class="popup-overlay" id="leave-popup">
   <div class="popup-box">
-    <div class="popup-icon">👋</div>
+    <div class="popup-icon">✦</div>
     <div class="popup-title">เสร็จ<span>เรียบร้อย</span></div>
     <div class="popup-msg">ขอให้โชคดีนะครับคุณ <strong id="leave-name-display" style="color:var(--red);"></strong></div>
     <div class="popup-warn">
@@ -3018,14 +3304,14 @@ input[type="file"] { display: none; }
 
 <div class="popup-overlay" id="verify-popup">
   <div class="popup-box">
-    <div class="popup-icon">⏳</div>
+    <div class="popup-icon">◎</div>
     <div class="popup-title">รอ<span>อนุมัติ</span></div>
     <div class="popup-msg">
       ส่งคำขอเรียบร้อยแล้ว!<br>
       รอ Admin ตรวจสอบและ<strong style="color:var(--red);">อนุมัติ</strong>ก่อนนะครับ<br>
       <span style="font-size:13px;color:var(--gray);margin-top:8px;display:block;">ข้อมูลจะปรากฏในหน้าสมาชิกหลังได้รับการอนุมัติ</span>
     </div>
-    <button class="btn-close-popup" onclick="closePopup('verify-popup')">รับทราบ ✓</button>
+    <button class="btn-close-popup" onclick="closePopup('verify-popup')">รับทราบ</button>
   </div>
 </div>
 
@@ -3129,6 +3415,120 @@ input[type="file"] { display: none; }
     requestAnimationFrame(animate);
   }
   animate();
+
+  // ====== GLOWING ORBS - FALLING LIGHT BALLS (UPGRADED) ======
+  (function() {
+    const orbCanvas = document.getElementById('orbs-canvas');
+    const octx = orbCanvas.getContext('2d');
+    let oW, oH;
+
+    function orbResize() {
+      oW = orbCanvas.width = window.innerWidth;
+      oH = orbCanvas.height = window.innerHeight;
+    }
+    orbResize();
+    window.addEventListener('resize', orbResize);
+
+    const ORB_COUNT = window.innerWidth < 768 ? 22 : 40;
+
+    function Orb() { this.reset(true); }
+    Orb.prototype.reset = function(initial) {
+      this.x = Math.random() * oW;
+      this.y = initial ? Math.random() * oH : -Math.random() * 160 - 10;
+      const sizeRoll = Math.random();
+      if (sizeRoll > 0.90)      { this.r = Math.random() * 9 + 10;  this.type = 'large'; }
+      else if (sizeRoll > 0.65) { this.r = Math.random() * 5 + 5;   this.type = 'medium'; }
+      else                      { this.r = Math.random() * 3 + 2;   this.type = 'small'; }
+
+      this.vy = this.r < 5 ? Math.random() * 1.1 + 0.4 : Math.random() * 0.55 + 0.18;
+      this.vxBase = (Math.random() - 0.5) * 0.3;
+      this.vx = this.vxBase;
+      this.wobbleSpeed = Math.random() * 0.018 + 0.006;
+      this.wobbleAmp = Math.random() * 0.7 + 0.15;
+      this.wobbleOffset = Math.random() * Math.PI * 2;
+
+      this.alphaBase = this.type === 'large'  ? 0.30 + Math.random() * 0.18
+                     : this.type === 'medium' ? 0.20 + Math.random() * 0.18
+                     : 0.10 + Math.random() * 0.15;
+      this.alpha = this.alphaBase;
+      this.pulseSpeed = Math.random() * 0.025 + 0.006;
+      this.pulseOffset = Math.random() * Math.PI * 2;
+      this.frame = 0;
+
+      const cRoll = Math.random();
+      if (cRoll > 0.90)      this.hue = { r:255, g:255, b:255 };
+      else if (cRoll > 0.72) this.hue = { r:210, g:220, b:240 };
+      else if (cRoll > 0.52) this.hue = { r:200, g:200, b:215 };
+      else if (cRoll > 0.32) this.hue = { r:160, g:165, b:178 };
+      else                   this.hue = { r:110, g:115, b:128 };
+    };
+
+    Orb.prototype.update = function() {
+      this.frame++;
+      this.vx = this.vxBase + Math.sin(this.frame * this.wobbleSpeed + this.wobbleOffset) * this.wobbleAmp;
+      this.x += this.vx;
+      this.y += this.vy;
+      this.alpha = this.alphaBase + Math.sin(this.frame * this.pulseSpeed + this.pulseOffset) * (this.alphaBase * 0.4);
+      if (this.x < -30) this.x = oW + 30;
+      if (this.x > oW + 30) this.x = -30;
+      if (this.y > oH + this.r * 5) this.reset(false);
+    };
+
+    Orb.prototype.draw = function(ctx) {
+      const {r, g, b} = this.hue;
+      const a = Math.max(0, Math.min(1, this.alpha));
+      if (this.type !== 'small') {
+        const gOuter = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r * 2.8);
+        gOuter.addColorStop(0, `rgba(${r},${g},${b},${a * 0.07})`);
+        gOuter.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r * 2.8, 0, Math.PI * 2);
+        ctx.fillStyle = gOuter;
+        ctx.fill();
+      }
+      const gMid = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r * 1.6);
+      gMid.addColorStop(0, `rgba(${r},${g},${b},${a * 0.25})`);
+      gMid.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r * 3.2, 0, Math.PI * 2);
+      ctx.fillStyle = gMid;
+      ctx.fill();
+      const gCore = ctx.createRadialGradient(
+        this.x, this.y, 0,
+        this.x, this.y, this.r
+      );
+      gCore.addColorStop(0,    `rgba(255,255,255,${a * 0.75})`);
+      gCore.addColorStop(0.35, `rgba(${r},${g},${b},${a * 0.55})`);
+      gCore.addColorStop(1,    `rgba(${Math.floor(r*0.4)},${Math.floor(g*0.4)},${Math.floor(b*0.4)},${a * 0.08})`);
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = gCore;
+      ctx.fill();
+      // Centered specular highlight
+      if (this.r > 4) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r * 0.22, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${a * 0.85})`;
+        ctx.fill();
+      }
+    };
+
+    const orbs = [];
+    for (let i = 0; i < ORB_COUNT; i++) orbs.push(new Orb());
+
+    function animateOrbs() {
+      octx.clearRect(0, 0, oW, oH);
+      orbs.forEach(o => { o.update(); o.draw(octx); });
+      requestAnimationFrame(animateOrbs);
+    }
+    animateOrbs();
+  })();
+
+  // (smoke canvas unused — kept for structure)
+  (function() {
+    const smokeCanvas = document.getElementById('smoke-canvas');
+    smokeCanvas.style.display = 'none';
+  })();
 })();
 
 // ====== SPARKLE ON CLICK ======
@@ -3180,8 +3580,8 @@ function animateCounter(el, target, duration = 800) {
 }
 
 // ====== SUPABASE CONFIG ======
-const SB_URL = 'https://zezyrvlgmbokujidmpkc.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplenlydmxnbWJva3VqaWRtcGtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTEwMzEsImV4cCI6MjA5MjA4NzAzMX0.cT9BQnwQYC2JZ3IgK2OLgJDMDzEraNr1rofcOzathj0';
+const SB_URL = 'https://gfsicsvuhcznlrsuypwq.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdmc2ljc3Z1aGN6bmxyc3V5cHdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTM3MzksImV4cCI6MjA5Mzc4OTczOX0.l6wXTIZaPmfrwoCsr0B7-WiFROiI0ot_QTyhMImlry8';
 
 async function sbFetch(table, method='GET', body=null, query='') {
   const res = await fetch(`${SB_URL}/rest/v1/${table}${query}`, {
@@ -3491,7 +3891,7 @@ async function submitLeave() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           embeds: [{
-            title: '🔴  THEZESTORA — คำขอออก',
+            title: '◉  THEZESTORA — คำขอออก',
             description: `**${nick}** ได้ยื่นคำขอออกจากแก๊งค์`,
             color: 0xED4245,
             fields: [
@@ -3643,18 +4043,18 @@ function renderBirthdayWidget() {
 // ====== BADGE / ACHIEVEMENT SYSTEM ======
 const BADGE_DEFS = [
   // Check-in badges
-  { id: 'ci_1',   icon: '✅', label: 'เช็คชื่อครั้งแรก',      tier: 'green',  check: (m, ci) => ci >= 1   },
-  { id: 'ci_5',   icon: '🔥', label: 'เช็คชื่อ 5 ครั้ง',      tier: 'orange', check: (m, ci) => ci >= 5   },
-  { id: 'ci_10',  icon: '⭐', label: 'เช็คชื่อ 10 ครั้ง',     tier: 'gold',   check: (m, ci) => ci >= 10  },
-  { id: 'ci_25',  icon: '💎', label: 'เช็คชื่อ 25 ครั้ง',     tier: 'blue',   check: (m, ci) => ci >= 25  },
-  { id: 'ci_50',  icon: '👑', label: 'เช็คชื่อ 50 ครั้ง',     tier: 'purple', check: (m, ci) => ci >= 50  },
+  { id: 'ci_1',   icon: '✓', label: 'เช็คชื่อครั้งแรก',      tier: 'green',  check: (m, ci) => ci >= 1   },
+  { id: 'ci_5',   icon: '✦', label: 'เช็คชื่อ 5 ครั้ง',      tier: 'orange', check: (m, ci) => ci >= 5   },
+  { id: 'ci_10',  icon: '★', label: 'เช็คชื่อ 10 ครั้ง',     tier: 'gold',   check: (m, ci) => ci >= 10  },
+  { id: 'ci_25',  icon: '⟡', label: 'เช็คชื่อ 25 ครั้ง',     tier: 'blue',   check: (m, ci) => ci >= 25  },
+  { id: 'ci_50',  icon: '✦', label: 'เช็คชื่อ 50 ครั้ง',     tier: 'purple', check: (m, ci) => ci >= 50  },
   // Seniority badges
-  { id: 'new',    icon: '🌟', label: 'สมาชิกใหม่',            tier: 'green',  check: (m, ci, ageDays) => ageDays !== null && ageDays < 30 },
-  { id: 'month',  icon: '📅', label: 'สมาชิก 1 เดือน+',       tier: 'blue',   check: (m, ci, ageDays) => ageDays !== null && ageDays >= 30  },
-  { id: 'senior', icon: '🏅', label: 'สมาชิก 3 เดือน+',       tier: 'gold',   check: (m, ci, ageDays) => ageDays !== null && ageDays >= 90  },
-  { id: 'legend', icon: '🦁', label: 'ตำนานแก๊งค์ (6 เดือน+)', tier: 'red',  check: (m, ci, ageDays) => ageDays !== null && ageDays >= 180 },
+  { id: 'new',    icon: '⋆', label: 'สมาชิกใหม่',            tier: 'green',  check: (m, ci, ageDays) => ageDays !== null && ageDays < 30 },
+  { id: 'month',  icon: '◈', label: 'สมาชิก 1 เดือน+',       tier: 'blue',   check: (m, ci, ageDays) => ageDays !== null && ageDays >= 30  },
+  { id: 'senior', icon: '◆', label: 'สมาชิก 3 เดือน+',       tier: 'gold',   check: (m, ci, ageDays) => ageDays !== null && ageDays >= 90  },
+  { id: 'legend', icon: '⟡', label: 'ตำนานแก๊งค์ (6 เดือน+)', tier: 'red',  check: (m, ci, ageDays) => ageDays !== null && ageDays >= 180 },
   // Fun badges
-  { id: 'bday',   icon: '🎂', label: 'วันเกิดวันนี้!',        tier: 'red',    check: (m) => {
+  { id: 'bday',   icon: '✦', label: 'วันเกิดวันนี้!',        tier: 'red',    check: (m) => {
     if (!m.dob) return false;
     const p = m.dob.split('-'); if(p.length < 3) return false;
     const today = new Date();
@@ -3774,7 +4174,7 @@ function adminSearchFilter(val) {
         <div class="post-item" style="margin-bottom:6px;flex-direction:column;align-items:flex-start;gap:8px;">
           <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start;">
             <div>
-              <div class="post-item-title">📩 ${m.subject}</div>
+              <div class="post-item-title">⊓ ${m.subject}</div>
               <div class="post-item-meta">จาก: ${m.sender} · ${m.date}</div>
             </div>
             <button class="btn-del" onclick="deleteDM(${m.id});adminSearchFilter(document.getElementById('admin-search-input').value)">ลบ</button>
@@ -3798,7 +4198,7 @@ function adminSearchFilter(val) {
       html += [...found].reverse().map(r => `
         <div class="post-item" style="margin-bottom:6px;">
           <div>
-            <div class="post-item-title">🚪 ${r.nick} (${r.ig}) — ${r.gen}</div>
+            <div class="post-item-title">⟡ ${r.nick} (${r.ig}) — ${r.gen}</div>
             <div class="post-item-meta">${r.date} · ${r.reason}</div>
           </div>
         </div>
@@ -3990,7 +4390,7 @@ async function postAnnouncement() {
   }
   save();
   updateBadge();
-  if (notifSettings.ann) pushNotif('ประกาศใหม่: ' + title, body.substring(0, 80), '📣');
+  if (notifSettings.ann) pushNotif('ประกาศใหม่: ' + title, body.substring(0, 80), '⟡');
 
   document.getElementById('ann-title-input').value = '';
   document.getElementById('ann-body-input').value = '';
@@ -4159,7 +4559,7 @@ function renderAdminPanel() {
       <div class="post-item" style="margin-bottom:8px;flex-direction:column;align-items:flex-start;gap:8px;">
         <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start;">
           <div>
-            <div class="post-item-title">📩 ${m.subject}</div>
+            <div class="post-item-title">⊓ ${m.subject}</div>
             <div class="post-item-meta">จาก: ${m.sender} · ${m.date}${m.anon ? ' · <span style="color:#ffa500;font-weight:700;">ไม่ระบุตัวตน</span>' : ''}</div>
           </div>
           <button class="btn-del" onclick="deleteDM(${m.id})">ลบ</button>
@@ -4197,8 +4597,8 @@ async function approveMember(id) {
     try {
       await fetch(wh, { method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ embeds:[{
-          title: '🟢  THEZESTORA — สมาชิกใหม่',
-          description: `**${m.nick}** เพิ่งได้รับการอนุมัติเข้าแก๊งค์แล้ว! 🎉`,
+          title: '◎  THEZESTORA — สมาชิกใหม่',
+          description: `**${m.nick}** เพิ่งได้รับการอนุมัติเข้าแก๊งค์แล้ว! ✦`,
           color: 0x57F287,
           fields:[
             { name:'ชื่อเล่น', value: m.nick, inline: true },
@@ -4292,7 +4692,7 @@ async function startCheckinSession() {
   if (res && res[0]) {
     activeSession = { ...res[0], checkedIn: [] };
     showToast(`เปิดเซสชัน "${name}" รหัส: ${code} ✓`);
-    if (notifSettings.ci) pushNotif('เปิดเช็คชื่อแล้ว!', `เซสชัน "${name}" รหัส: ${code} — เปิดอีก ${mins} นาที`, '✅');
+    if (notifSettings.ci) pushNotif('เปิดเช็คชื่อแล้ว!', `เซสชัน "${name}" รหัส: ${code} — เปิดอีก ${mins} นาที`, '✓');
     renderAdminPanel();
     startSessionTimer();
   } else {
@@ -4433,7 +4833,7 @@ async function submitCheckin() {
   if (codeInput !== activeSession.code) {
     resultEl.style.display = 'block';
     resultEl.className = 'checkin-result';
-    resultEl.innerHTML = '<div style="color:var(--red);font-weight:700;font-size:15px;">❌ รหัสไม่ถูกต้อง กรุณาลองใหม่</div>';
+    resultEl.innerHTML = '<div style="color:var(--red);font-weight:700;font-size:15px;">✕ รหัสไม่ถูกต้อง กรุณาลองใหม่</div>';
     return;
   }
 
@@ -4443,7 +4843,7 @@ async function submitCheckin() {
   if (!member) {
     resultEl.style.display = 'block';
     resultEl.className = 'checkin-result';
-    resultEl.innerHTML = `<div style="color:var(--red);font-weight:700;font-size:15px;">❌ ไม่พบ ${igFull} ในระบบสมาชิก</div><div style="color:var(--gray);font-size:13px;margin-top:6px;">หากเพิ่งสมัคร กรุณารอแอดมินอนุมัติก่อน</div>`;
+    resultEl.innerHTML = `<div style="color:var(--red);font-weight:700;font-size:15px;">✕ ไม่พบ ${igFull} ในระบบสมาชิก</div><div style="color:var(--gray);font-size:13px;margin-top:6px;">หากเพิ่งสมัคร กรุณารอแอดมินอนุมัติก่อน</div>`;
     return;
   }
 
@@ -4469,7 +4869,7 @@ async function submitCheckin() {
     <div style="display:flex;align-items:center;gap:14px;">
       ${member.avatar ? `<img src="${member.avatar}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #aaaaaa;">` : ''}
       <div>
-        <div class="checkin-result-name">✅ ${member.nick}</div>
+        <div class="checkin-result-name">✓ ${member.nick}</div>
         <div class="checkin-result-info">${member.ig} · ${member.gen}<br>เช็คชื่อเวลา ${timeStr}</div>
       </div>
     </div>
@@ -4524,19 +4924,19 @@ async function checkBirthdays() {
     const mDOB = `${parts[1]}-${parts[2]}`;
     if (mDOB !== todayMD) continue;
 
-    console.log(`[Birthday] 🎂 วันเกิดของ ${m.nick} (${m.ig})`);
+    console.log(`[Birthday] ✦ วันเกิดของ ${m.nick} (${m.ig})`);
 
     // แสดง birthday overlay (แสดงทุกคนที่เปิดเว็บ ปกติ)
     showBirthdayOverlay(m);
     // Push notification วันเกิด
-    if (notifSettings.bday) pushNotif(`🎂 Happy Birthday ${m.nick}!`, `วันนี้เป็นวันเกิดของ ${m.nick} (${m.ig}) ${m.gen} 🎉`, '🎂');
+    if (notifSettings.bday) pushNotif(`✦ Happy Birthday ${m.nick}!`, `วันนี้เป็นวันเกิดของ ${m.nick} (${m.ig}) ${m.gen} ✦`, '✦');
 
     // ส่ง Discord webhook — เช็ค flag จาก Supabase (ส่วนกลาง)
     if (!wh) { console.warn('[Birthday] ไม่มี webhook URL'); continue; }
 
     const webhookSentKey = `${todayMD}_${m.id || m.ig}`;
     if (bdaySentLog[webhookSentKey]) {
-      console.log(`[Birthday] ✅ ส่ง Discord ไปแล้วสำหรับ ${m.nick} วันนี้ ข้าม`);
+      console.log(`[Birthday] ✓ ส่ง Discord ไปแล้วสำหรับ ${m.nick} วันนี้ ข้าม`);
       continue;
     }
     // จอง flag ทันทีก่อนส่ง (กัน race condition หลายคนเปิดพร้อมกัน)
@@ -4605,7 +5005,7 @@ async function checkBirthdays() {
         body: JSON.stringify({
           content: msgContent,
           embeds: [{
-            title: `🎂 HAPPY BIRTHDAY, ${m.nick}`,
+            title: `✦ HAPPY BIRTHDAY, ${m.nick}`,
             description: [
               `### ${m.nick}`,
               ``,
@@ -4625,11 +5025,11 @@ async function checkBirthdays() {
         })
       });
       if (res.ok) {
-        console.log(`[Birthday] ✅ ส่ง Discord สำเร็จสำหรับ ${m.nick}`);
+        console.log(`[Birthday] ✓ ส่ง Discord สำเร็จสำหรับ ${m.nick}`);
         // flag ถูกบันทึกใน Supabase แล้วก่อนส่ง (บรรทัดด้านบน)
       } else {
         const errText = await res.text();
-        console.error(`[Birthday] ❌ Discord ตอบ ${res.status}:`, errText);
+        console.error(`[Birthday] ✕ Discord ตอบ ${res.status}:`, errText);
         // ถ้าส่งไม่สำเร็จ ให้ลบ flag ออก เพื่อให้ลองใหม่ครั้งหน้า
         delete bdaySentLog[webhookSentKey];
         try { await sbFetch('settings', 'PATCH', { bday_sent_log: bdaySentLog }, '?id=eq.1'); } catch(e2) {}
@@ -4715,7 +5115,7 @@ async function checkAnniversary() {
         body: JSON.stringify({
           content: `✦ **THEZESTORA ครบรอบ ${months} เดือน** ✦ — @everyone`,
           embeds: [{
-            title: `🥂 HAPPY ANNIVERSARY`,
+            title: `✦ HAPPY ANNIVERSARY`,
             description: `### ${months} เดือนแล้ว\n\n*" ขอบคุณทุกคนที่อยู่ด้วยกันมาตลอด — THEZESTORA ยังคงอยู่ และจะอยู่ต่อไป "*`,
             color: embedColor,
             fields: [
@@ -4821,7 +5221,7 @@ function renderPolls() {
 
     return `<div class="poll-card reveal">
       <div class="poll-question">${poll.question}
-        ${isClosed ? `<span class="poll-closed-tag">ปิดแล้ว</span>` : `<span class="poll-active-tag">🟢 เปิดอยู่</span>`}
+        ${isClosed ? `<span class="poll-closed-tag">ปิดแล้ว</span>` : `<span class="poll-active-tag">◎ เปิดอยู่</span>`}
       </div>
       <div class="poll-meta">${poll.date} · ${total} โหวต</div>
       <div class="poll-options">
@@ -4938,7 +5338,7 @@ function renderCalendar() {
   // Add birthday events from members
   const birthdays = members.filter(m => m.dob).map(m => {
     const parts = m.dob.split('-');
-    return { type: 'birthday', day: parseInt(parts[2]), month: parseInt(parts[1]) - 1, title: `🎂 ${m.nick}`, desc: m.ig };
+    return { type: 'birthday', day: parseInt(parts[2]), month: parseInt(parts[1]) - 1, title: `✦ ${m.nick}`, desc: m.ig };
   });
 
   const days = ['อา','จ','อ','พ','พฤ','ศ','ส'];
@@ -5065,13 +5465,13 @@ function renderLeaderboard() {
 
   const podiumOrder = [lb[1], lb[0], lb[2]].filter(Boolean);
   const rankClasses = lb[1] ? ['rank-2','rank-1','rank-3'] : ['rank-1','rank-2','rank-3'];
-  const crowns = ['🥈','🏆','🥉'];
+  const crowns = ['★','✦','◆'];
 
   podium.innerHTML = podiumOrder.map((p, i) => {
     const actualRank = lb.indexOf(p) + 1;
     const rc = lb[1] ? rankClasses[i] : `rank-${i+1}`;
     return `<div class="lb-podium-item ${rc}">
-      <div class="lb-podium-crown">${actualRank===1?'🏆':actualRank===2?'🥈':'🥉'}</div>
+      <div class="lb-podium-crown">${actualRank===1?'✦':actualRank===2?'★':'◆'}</div>
       <div class="lb-podium-rank">อันดับ ${actualRank}</div>
       <div class="lb-podium-avatar">${p.avatar ? `<img src="${p.avatar}" alt="">` : p.nick.charAt(0).toUpperCase()}</div>
       <div class="lb-podium-name">${p.nick}</div>
@@ -5283,7 +5683,7 @@ async function requestNotifPermission() {
   if (!('Notification' in window)) return;
   const perm = await Notification.requestPermission();
   initNotifUI();
-  if (perm === 'granted') showToast('เปิดการแจ้งเตือนเรียบร้อยแล้ว 🔔');
+  if (perm === 'granted') showToast('เปิดการแจ้งเตือนเรียบร้อยแล้ว ◎');
   else if (perm === 'denied') showToast('ถูกบล็อก — กรุณาอนุญาตใน Settings เบราว์เซอร์');
 }
 
@@ -5295,7 +5695,7 @@ function toggleNotif(key) {
   showToast(notifSettings[key] ? `เปิดการแจ้งเตือน ✓` : `ปิดการแจ้งเตือนแล้ว`);
 }
 
-function pushNotif(title, body, icon = '🔔') {
+function pushNotif(title, body, icon = '◎') {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   try {
     new Notification(`${icon} ${title}`, {
@@ -5309,7 +5709,7 @@ function pushNotif(title, body, icon = '🔔') {
 }
 
 function sendTestNotif() {
-  pushNotif('THEZESTORA', 'ทดสอบระบบแจ้งเตือนเรียบร้อย! 🎉', '🔔');
+  pushNotif('THEZESTORA', 'ทดสอบระบบแจ้งเตือนเรียบร้อย! ✦', '✦');
   showToast('ส่งการแจ้งเตือนทดสอบแล้ว ✓');
 }
 
@@ -5376,7 +5776,7 @@ function showToast(msg, type = 'info') {
   const t = document.getElementById('toast');
   const icon = document.getElementById('toast-icon');
   const msgEl = document.getElementById('toast-msg');
-  const icons = { success: '✓', error: '✕', warn: '⚠', info: '✦' };
+  const icons = { success: '✓', error: '✕', warn: '⟡', info: '✦' };
   const colors = { success: '#aaaaaa', error: '#e05', warn: '#ffa500', info: 'var(--red)' };
   icon.textContent = icons[type] || '✦';
   icon.style.color = colors[type] || 'var(--red)';
@@ -5459,7 +5859,7 @@ function chaccReset() {
   document.getElementById('chacc-new-ig').value = '';
   document.getElementById('chacc-new-nick').value = '';
   document.getElementById('chacc-new-avatar-input').value = '';
-  document.getElementById('chacc-new-avatar-preview').innerHTML = '🖼️';
+  document.getElementById('chacc-new-avatar-preview').innerHTML = '⬡️';
   document.getElementById('chacc-new-avatar-preview').classList.remove('has-image');
   document.getElementById('chacc-clear-avatar').style.display = 'none';
   chaccSetStep(1);
@@ -5529,7 +5929,7 @@ function chaccVerify() {
   document.getElementById('chacc-new-ig').value = '';
   document.getElementById('chacc-new-nick').value = '';
   document.getElementById('chacc-new-avatar-input').value = '';
-  document.getElementById('chacc-new-avatar-preview').innerHTML = '🖼️';
+  document.getElementById('chacc-new-avatar-preview').innerHTML = '⬡️';
   document.getElementById('chacc-new-avatar-preview').classList.remove('has-image');
   document.getElementById('chacc-clear-avatar').style.display = 'none';
 
@@ -5555,7 +5955,7 @@ function chaccPreviewAvatar(input) {
 function chaccClearAvatar() {
   chaccNewAvatarData = null;
   document.getElementById('chacc-new-avatar-input').value = '';
-  document.getElementById('chacc-new-avatar-preview').innerHTML = '🖼️';
+  document.getElementById('chacc-new-avatar-preview').innerHTML = '⬡️';
   document.getElementById('chacc-new-avatar-preview').classList.remove('has-image');
   document.getElementById('chacc-clear-avatar').style.display = 'none';
 }
@@ -5587,7 +5987,7 @@ async function chaccSave() {
 
   const ok = await sbFetch('members', 'PATCH', payload, `?id=eq.${chaccTargetMember.id}`);
 
-  if (btn) { btn.classList.remove('loading'); btn.textContent = '💾 บันทึกการเปลี่ยนแปลง'; }
+  if (btn) { btn.classList.remove('loading'); btn.textContent = '⊟ บันทึกการเปลี่ยนแปลง'; }
   if (!ok) { showToast('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error'); return; }
 
   // อัปเดต local state
@@ -5692,8 +6092,8 @@ async function saveBgURL() {
   bgMusicData = { name: raw.trim(), url: url, vol: vol };
   await sbFetch('settings', 'PATCH', { bgmusic: bgMusicData }, '?id=eq.1');
   const st = document.getElementById('bgmusic-status');
-  if (st) st.innerHTML = `<span style="color:var(--red-light);">✓ บันทึก URL แล้ว — กด ▶ ทดสอบเล่น เพื่อตรวจสอบ</span>`;
-  showToast('🎵 บันทึกแล้ว — เพลงพร้อมเล่นสำหรับทุกคน');
+  if (st) st.innerHTML = `<span style="color:var(--red-light);">✓ บันทึก URL แล้ว — กด ⏵ ทดสอบเล่น เพื่อตรวจสอบ</span>`;
+  showToast('♪ บันทึกแล้ว — เพลงพร้อมเล่นสำหรับทุกคน');
   startBgMusic(url);
 }
 
@@ -5701,14 +6101,14 @@ function testBgMusic() {
   const src = (bgMusicData && (bgMusicData.data || bgMusicData.url)) || _bgMusicURL;
   if (!src) { showToast('ยังไม่มีเพลง — บันทึก URL หรืออัปโหลดไฟล์ก่อนครับ'); return; }
   startBgMusic(src);
-  showToast('▶ กำลังเล่นเพลงพื้นหลัง');
+  showToast('⏵ กำลังเล่นเพลงพื้นหลัง');
 }
 
 function saveBgMusic(input) {
   const file = input.files[0];
   if (!file) return;
   const st = document.getElementById('bgmusic-status');
-  if (st) st.innerHTML = '<span style="color:var(--gray);">⏳ กำลังบันทึก...</span>';
+  if (st) st.innerHTML = '<span style="color:var(--gray);">◎ กำลังบันทึก...</span>';
   const reader = new FileReader();
   reader.onload = async function(e) {
     const b64 = e.target.result;
@@ -5717,15 +6117,15 @@ function saveBgMusic(input) {
     try {
       await sbFetch('settings', 'PATCH', { bgmusic: bgMusicData }, '?id=eq.1');
       if (st) st.innerHTML = `<span style="color:var(--red-light);">✓ ${file.name}</span>`;
-      showToast('🎵 บันทึกแล้ว — ทุกคนที่เปิดเว็บจะได้ยินเพลงด้วย');
+      showToast('♪ บันทึกแล้ว — ทุกคนที่เปิดเว็บจะได้ยินเพลงด้วย');
       startBgMusic(b64);
     } catch(err) {
       // ไฟล์ใหญ่เกิน — เล่นเฉพาะ session นี้
       bgMusicData = { name: file.name, vol: vol };
       if (_bgMusicURL) URL.revokeObjectURL(_bgMusicURL);
       _bgMusicURL = URL.createObjectURL(file);
-      if (st) st.innerHTML = '<span style="color:#e8a030;">⚠ ไฟล์ใหญ่เกินไป — บันทึกได้เฉพาะ session นี้</span>';
-      showToast('⚠ ไฟล์ใหญ่เกินไป — ลองใช้ URL แทนครับ');
+      if (st) st.innerHTML = '<span style="color:#e8a030;">⚡ ไฟล์ใหญ่เกินไป — บันทึกได้เฉพาะ session นี้</span>';
+      showToast('⚡ ไฟล์ใหญ่เกินไป — ลองใช้ URL แทนครับ');
       startBgMusic(_bgMusicURL);
     }
   };
