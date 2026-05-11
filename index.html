@@ -3201,7 +3201,7 @@ body {
 
   <!-- Video bg -->
   <div class="loader-video-wrap">
-    <video id="loader-video" autoplay muted playsinline loop preload="auto"
+    <video id="loader-video" autoplay muted playsinline preload="auto"
            src="https://res.cloudinary.com/dwfyekmfc/video/upload/v1778479170/video699_1_vu35zv.mp4">
     </video>
   </div>
@@ -7044,6 +7044,7 @@ function showToast(msg, type = 'info') {
     if (partCanvas)  partCanvas.style.opacity  = '0';
 
     if (vid) {
+      vid._seamlessLoop = false;  // ปิด seamless loop — เล่นครั้งเดียว
       vid.loop = false;
       vid.muted = false;
       vid.volume = 1.0;
@@ -7635,6 +7636,21 @@ window.addEventListener('load', () => {
     // ไม่มี splash — โหลดหลัง 1.4s (หลัง loader animation)
     // page-loader hides itself after 20s via its own timer — just init app
     initApp();
+  }
+
+  // Seamless video loop — ป้องกันกระตุกระหว่าง loop
+  const vid = document.getElementById('loader-video');
+  if (vid) {
+    vid.addEventListener('timeupdate', function() {
+      // ถ้าเป็น seamless loop mode (muted = ยังไม่กด splash)
+      // และวิดีโอใกล้จบ ให้ jump กลับต้น
+      if (vid.loop === undefined || vid._seamlessLoop !== false) {
+        if (vid.duration && vid.currentTime >= vid.duration - 0.18) {
+          vid.currentTime = 0;
+        }
+      }
+    });
+    vid._seamlessLoop = true;
   }
 });
 </script>
