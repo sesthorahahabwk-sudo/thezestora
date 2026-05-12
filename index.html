@@ -2998,6 +2998,141 @@ input[type="file"] { display: none; }
 </style>
 
 <style>
+
+/* ====== GOTHIC FRAME — ADMIN CARD (from user image) ====== */
+@keyframes adminFrameGlow {
+  0%   { filter: drop-shadow(0 0 6px rgba(255,255,255,0.12)) drop-shadow(0 0 20px rgba(200,200,200,0.06)); }
+  50%  { filter: drop-shadow(0 0 14px rgba(255,255,255,0.32)) drop-shadow(0 0 40px rgba(220,220,220,0.18)) drop-shadow(0 0 70px rgba(180,180,180,0.08)); }
+  100% { filter: drop-shadow(0 0 6px rgba(255,255,255,0.12)) drop-shadow(0 0 20px rgba(200,200,200,0.06)); }
+}
+
+@keyframes adminSilverGlow2 {
+  0%   { box-shadow: 0 0 10px rgba(255,255,255,0.06), 0 0 30px rgba(255,255,255,0.03); }
+  50%  { box-shadow: 0 0 24px rgba(255,255,255,0.20), 0 0 60px rgba(255,255,255,0.09), 0 0 100px rgba(200,200,200,0.04); }
+  100% { box-shadow: 0 0 10px rgba(255,255,255,0.06), 0 0 30px rgba(255,255,255,0.03); }
+}
+
+.member-card-admin {
+  position: relative !important;
+  padding-top: 26px !important;
+  border: none !important;
+  background: linear-gradient(135deg, rgba(8,8,10,0.99) 0%, rgba(14,14,16,0.99) 50%, rgba(8,8,10,0.99) 100%) !important;
+  opacity: 1 !important;
+  transform: scale(1) !important;
+  animation: adminSilverGlow2 3s ease-in-out infinite !important;
+  isolation: isolate;
+}
+
+/* frame moved to avatar */
+.member-card-admin::after { display: none !important; }
+
+.member-card-admin:hover {
+  border: none !important;
+  box-shadow: 0 0 40px rgba(255,255,255,0.12), 0 0 80px rgba(255,255,255,0.05) !important;
+  transform: translateY(-4px) !important;
+  animation: none !important;
+}
+
+/* ====== ENHANCED MEMBER CARD OUTER FRAME ====== */
+@keyframes memberCardShimmer {
+  0%   { border-color: rgba(180,180,180,0.06); box-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+  50%  { border-color: rgba(200,200,200,0.13); box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 8px rgba(180,180,180,0.04); }
+  100% { border-color: rgba(180,180,180,0.06); box-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+}
+
+.member-card:not(.member-card-admin) {
+  border: 1px solid rgba(180,180,180,0.08) !important;
+  background: rgba(10,10,12,0.72) !important;
+  animation: popIn 0.4s ease forwards, memberCardShimmer 5s ease-in-out 1s infinite !important;
+  position: relative;
+}
+
+.member-card:not(.member-card-admin)::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border: 1px solid transparent !important;
+  background: 
+    linear-gradient(rgba(10,10,12,0.72), rgba(10,10,12,0.72)) padding-box,
+    linear-gradient(135deg, 
+      rgba(180,180,180,0.22) 0%, 
+      rgba(80,80,80,0.08) 25%, 
+      rgba(180,180,180,0.14) 50%,
+      rgba(80,80,80,0.08) 75%,
+      rgba(180,180,180,0.22) 100%) border-box !important;
+  pointer-events: none !important;
+  opacity: 1 !important;
+  transition: opacity 0.3s !important;
+  height: auto !important;
+  width: auto !important;
+}
+
+.member-card:not(.member-card-admin):hover::before {
+  background: 
+    linear-gradient(rgba(10,10,12,0.85), rgba(10,10,12,0.85)) padding-box,
+    linear-gradient(135deg,
+      rgba(255,255,255,0.5) 0%,
+      rgba(150,150,150,0.15) 25%,
+      rgba(255,255,255,0.35) 50%,
+      rgba(150,150,150,0.15) 75%,
+      rgba(255,255,255,0.5) 100%) border-box !important;
+}
+
+.member-card:not(.member-card-admin):hover {
+  border: 1px solid transparent !important;
+  background: rgba(12,12,14,0.88) !important;
+  transform: translateY(-5px) scale(1.02) !important;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.6), 0 0 30px rgba(180,180,180,0.06) !important;
+}
+
+
+
+
+
+
+
+/* ====== GOTHIC FRAME OVERLAY ON ADMIN AVATAR ====== */
+.member-avatar-admin {
+  position: relative !important;
+  overflow: visible !important;
+}
+.admin-gothic-frame {
+  position: absolute !important;
+  inset: -20px !important;
+  width: calc(100% + 40px) !important;
+  height: calc(100% + 40px) !important;
+  object-fit: fill !important;
+  pointer-events: none !important;
+  z-index: 50 !important;
+  mix-blend-mode: screen !important;
+  filter: 
+    brightness(1.8)
+    contrast(1.2)
+    drop-shadow(0 0 10px rgba(255,255,255,0.5))
+    drop-shadow(0 0 28px rgba(200,200,200,0.3)) !important;
+  animation: adminFrameGlow3 3s ease-in-out infinite !important;
+}
+@keyframes adminFrameGlow3 {
+  0%,100% {
+    filter: brightness(1.6) contrast(1.1)
+      drop-shadow(0 0 8px rgba(255,255,255,0.45))
+      drop-shadow(0 0 22px rgba(200,200,200,0.25));
+  }
+  50% {
+    filter: brightness(2.2) contrast(1.3)
+      drop-shadow(0 0 18px rgba(255,255,255,0.85))
+      drop-shadow(0 0 50px rgba(220,220,220,0.55))
+      drop-shadow(0 0 80px rgba(180,180,180,0.25));
+  }
+}
+.member-card-admin:hover .admin-gothic-frame {
+  animation: none !important;
+  filter: brightness(2.5) contrast(1.4)
+    drop-shadow(0 0 24px rgba(255,255,255,1))
+    drop-shadow(0 0 60px rgba(220,220,220,0.7))
+    drop-shadow(0 0 100px rgba(180,180,180,0.35)) !important;
+}
+
 /* ====== PERFORMANCE OPTIMIZATIONS ====== */
 /* GPU-accelerate all animated elements */
 .hero-tag, .hero-title, .hero-sub, .hero-divider, .hero-btns, .hero-stats,
@@ -7084,9 +7219,29 @@ function showToast(msg, type = 'info') {
       };
       vid.addEventListener('ended', onEnded);
 
+      // Timeout fallback: ถ้าวิดีโอโหลดไม่ได้หรือค้าง ให้ข้ามไปเลย
+      const loaderTimeout = setTimeout(() => {
+        vid.removeEventListener('timeupdate', onTimeUpdate);
+        vid.removeEventListener('ended', onEnded);
+        onEnded();
+      }, 15000); // 15 วิ max
+
+      const origOnEnded = onEnded;
+      vid.removeEventListener('ended', onEnded);
+      const wrappedOnEnded = () => { clearTimeout(loaderTimeout); origOnEnded(); };
+      vid.addEventListener('ended', wrappedOnEnded);
+
       vid.play().catch(() => {
         vid.muted = true;
-        vid.play().catch(() => {});
+        vid.play().catch(() => {
+          // วิดีโอเล่นไม่ได้เลย → ข้ามไปหน้าหลักทันที
+          clearTimeout(loaderTimeout);
+          vid.removeEventListener('timeupdate', onTimeUpdate);
+          vid.removeEventListener('ended', wrappedOnEnded);
+          if (fillEl) fillEl.style.width = '100%';
+          if (pctEl)  pctEl.firstChild.textContent = '100';
+          origOnEnded();
+        });
       });
     }
 
@@ -7745,6 +7900,9 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </div>
+
+
+
 
 </body>
 </html>
